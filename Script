@@ -41,27 +41,19 @@ end
 -- UI Creation
 local function createUI()
     local ScreenGui = Instance.new("ScreenGui")
-    local MainFrame = Instance.new("Frame")
     local StartFrame = Instance.new("Frame")
+    local MainFrame = Instance.new("Frame")
+    local ProgressBar = Instance.new("Frame")
+    local Progress = Instance.new("Frame")
     local ScanButton = Instance.new("TextButton")
     local MinimizeButton = Instance.new("TextButton")
     local CloseButton = Instance.new("TextButton")
-    local LogButton = Instance.new("TextButton")
-    local StartButton = Instance.new("TextButton")
+    local ExecuteButton = Instance.new("TextButton")
+    local ScriptBox = Instance.new("TextBox")
+    local StatusLabel = Instance.new("TextLabel")
+    local TitleLabel = Instance.new("TextLabel")
     
     ScreenGui.Parent = game.CoreGui
-    
-    -- Setup Main UI Elements
-    MainFrame.Size = UDim2.new(0, 450, 0, 350)
-    MainFrame.Position = UDim2.new(0.5, -225, 0.5, -175)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    MainFrame.BorderSizePixel = 2
-    MainFrame.Draggable = true
-    MainFrame.Active = true
-    MainFrame.BorderMode = Enum.BorderMode.Outline
-    MainFrame.BorderColor3 = Color3.fromRGB(70, 70, 70)
-    MainFrame.BackgroundTransparency = 0.1
-    MainFrame.Visible = false
     
     -- Setup Start UI Elements
     StartFrame.Size = UDim2.new(0, 300, 0, 200)
@@ -74,12 +66,61 @@ local function createUI()
     StartFrame.BorderColor3 = Color3.fromRGB(70, 70, 70)
     StartFrame.BackgroundTransparency = 0.1
     
+    -- Title Label
+    TitleLabel.Size = UDim2.new(0, 280, 0, 40)
+    TitleLabel.Position = UDim2.new(0.5, -140, 0.1, 0)
+    TitleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TitleLabel.Text = "Backdoor Scanner PRO"
+    TitleLabel.TextSize = 24
+    TitleLabel.Parent = StartFrame
+    
+    -- Progress Bar
+    ProgressBar.Size = UDim2.new(0, 280, 0, 20)
+    ProgressBar.Position = UDim2.new(0.5, -140, 0.5, 40)
+    ProgressBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    ProgressBar.Parent = StartFrame
+    
+    Progress.Size = UDim2.new(0, 0, 1, 0)
+    Progress.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    Progress.Parent = ProgressBar
+    
+    -- Status Label
+    StatusLabel.Size = UDim2.new(0, 280, 0, 20)
+    StatusLabel.Position = UDim2.new(0.5, -140, 0.5, 70)
+    StatusLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    StatusLabel.Text = "Scanning for backdoors..."
+    StatusLabel.TextSize = 18
+    StatusLabel.Parent = StartFrame
+    
+    -- Main Frame UI Elements
+    MainFrame.Size = UDim2.new(0, 350, 0, 150)
+    MainFrame.Position = UDim2.new(0.5, -175, 0.5, -75)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    MainFrame.BorderSizePixel = 2
+    MainFrame.Draggable = true
+    MainFrame.Active = true
+    MainFrame.BorderMode = Enum.BorderMode.Outline
+    MainFrame.BorderColor3 = Color3.fromRGB(70, 70, 70)
+    MainFrame.BackgroundTransparency = 0.1
+    MainFrame.Visible = false
+    
+    -- Script TextBox
+    ScriptBox.Size = UDim2.new(0, 280, 0, 40)
+    ScriptBox.Position = UDim2.new(0.5, -140, 0.5, -30)
+    ScriptBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    ScriptBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ScriptBox.PlaceholderText = "Place your require script here..."
+    ScriptBox.TextSize = 18
+    ScriptBox.Parent = MainFrame
+    
     -- Helper function to create buttons
     local function createButton(name, text, position, callback, parent)
         local button = Instance.new("TextButton")
         button.Name = name
         button.Text = text
-        button.Size = UDim2.new(0, 140, 0, 40)
+        button.Size = UDim2.new(0, 100, 0, 40)
         button.Position = position
         button.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
         button.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -91,17 +132,13 @@ local function createUI()
         button.MouseButton1Click:Connect(callback)
         return button
     end
-
+    
     -- Main UI Buttons
-    ScanButton = createButton("ScanButton", "Scan", UDim2.new(0, 10, 0, 10), function()
-        local backdoors = scanForBackdoors()
-        for _, v in pairs(backdoors) do
-            print("Potential Backdoor:", v)
-        end
-        logBackdoors(backdoors)
+    ExecuteButton = createButton("ExecuteButton", "Execute", UDim2.new(0.5, 40, 0.5, 20), function()
+        loadstring(ScriptBox.Text)()
     end, MainFrame)
     
-    MinimizeButton = createButton("MinimizeButton", "-", UDim2.new(0, 310, 0, 10), function()
+    MinimizeButton = createButton("MinimizeButton", "-", UDim2.new(0.5, -140, 0.5, 20), function()
         MainFrame.Visible = false
         local Ball = Instance.new("Frame")
         Ball.Size = UDim2.new(0, 60, 0, 60)
@@ -116,26 +153,30 @@ local function createUI()
         end)
     end, MainFrame)
     
-    LogButton = createButton("LogButton", "View Logs", UDim2.new(0, 160, 0, 250), function()
-        -- Log Window
-        local logWindow = Instance.new("TextLabel")
-        logWindow.Size = UDim2.new(0, 300, 0, 150)
-        logWindow.Position = UDim2.new(0.5, -150, 0.5, -75)
-        logWindow.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-        logWindow.Text = "Log:\n"
-        logWindow.TextColor3 = Color3.fromRGB(255, 255, 255)
-        logWindow.TextSize = 16
-        logWindow.Parent = ScreenGui
-    end, MainFrame)
-    
-    CloseButton = createButton("CloseButton", "X", UDim2.new(0, 310, 0, 70), function()
+    CloseButton = createButton("CloseButton", "X", UDim2.new(0.5, 40, 0.5, 20), function()
         ScreenGui:Destroy()
     end, MainFrame)
     
     -- Start UI Button
-    StartButton = createButton("StartButton", "Start", UDim2.new(0.5, -70, 0.5, -20), function()
+    ScanButton = createButton("ScanButton", "Start Scan", UDim2.new(0.5, -50, 0.5, 50), function()
+        local backdoors = scanForBackdoors()
+        
+        -- Update progress bar and status
+        for i = 1, 100 do
+            Progress.Size = UDim2.new(i/100, 0, 1, 0)
+            StatusLabel.Text = "Scanning... " .. i .. "%"
+            wait(0.1)
+        end
+        
+        -- Show main UI after scan
         StartFrame.Visible = false
         MainFrame.Visible = true
+        
+        -- Log found backdoors
+        for _, v in pairs(backdoors) do
+            print("Potential Backdoor:", v)
+        end
+        logBackdoors(backdoors)
     end, StartFrame)
     
     StartFrame.Parent = ScreenGui
