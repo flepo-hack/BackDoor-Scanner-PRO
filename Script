@@ -40,6 +40,8 @@ end
 
 -- UI Creation
 local function createUI()
+    local TweenService = game:GetService("TweenService")
+    
     local ScreenGui = Instance.new("ScreenGui")
     local StartFrame = Instance.new("Frame")
     local MainFrame = Instance.new("Frame")
@@ -52,12 +54,13 @@ local function createUI()
     local ScriptBox = Instance.new("TextBox")
     local StatusLabel = Instance.new("TextLabel")
     local TitleLabel = Instance.new("TextLabel")
+    local WarningLabel = Instance.new("TextLabel")
     
     ScreenGui.Parent = game.CoreGui
     
     -- Setup Start UI Elements
-    StartFrame.Size = UDim2.new(0, 300, 0, 200)
-    StartFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+    StartFrame.Size = UDim2.new(0, 400, 0, 250)
+    StartFrame.Position = UDim2.new(0.5, -200, 0.5, -125)
     StartFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     StartFrame.BorderSizePixel = 2
     StartFrame.Draggable = true
@@ -67,17 +70,26 @@ local function createUI()
     StartFrame.BackgroundTransparency = 0.1
     
     -- Title Label
-    TitleLabel.Size = UDim2.new(0, 280, 0, 40)
-    TitleLabel.Position = UDim2.new(0.5, -140, 0.1, 0)
+    TitleLabel.Size = UDim2.new(0, 380, 0, 40)
+    TitleLabel.Position = UDim2.new(0.5, -190, 0.1, 0)
     TitleLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     TitleLabel.Text = "Backdoor Scanner PRO"
     TitleLabel.TextSize = 24
     TitleLabel.Parent = StartFrame
+
+    -- Warning Label
+    WarningLabel.Size = UDim2.new(0, 380, 0, 30)
+    WarningLabel.Position = UDim2.new(0.5, -190, 0.3, 0)
+    WarningLabel.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+    WarningLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+    WarningLabel.Text = "Warning: Freezing may occur during scan"
+    WarningLabel.TextSize = 18
+    WarningLabel.Parent = StartFrame
     
     -- Progress Bar
-    ProgressBar.Size = UDim2.new(0, 280, 0, 20)
-    ProgressBar.Position = UDim2.new(0.5, -140, 0.5, 40)
+    ProgressBar.Size = UDim2.new(0, 380, 0, 20)
+    ProgressBar.Position = UDim2.new(0.5, -190, 0.5, 40)
     ProgressBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     ProgressBar.Parent = StartFrame
     
@@ -86,8 +98,8 @@ local function createUI()
     Progress.Parent = ProgressBar
     
     -- Status Label
-    StatusLabel.Size = UDim2.new(0, 280, 0, 20)
-    StatusLabel.Position = UDim2.new(0.5, -140, 0.5, 70)
+    StatusLabel.Size = UDim2.new(0, 380, 0, 20)
+    StatusLabel.Position = UDim2.new(0.5, -190, 0.5, 70)
     StatusLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     StatusLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     StatusLabel.Text = "Scanning for backdoors..."
@@ -95,8 +107,8 @@ local function createUI()
     StatusLabel.Parent = StartFrame
     
     -- Main Frame UI Elements
-    MainFrame.Size = UDim2.new(0, 350, 0, 150)
-    MainFrame.Position = UDim2.new(0.5, -175, 0.5, -75)
+    MainFrame.Size = UDim2.new(0, 450, 0, 200)
+    MainFrame.Position = UDim2.new(0.5, -225, 0.5, -100)
     MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     MainFrame.BorderSizePixel = 2
     MainFrame.Draggable = true
@@ -107,8 +119,8 @@ local function createUI()
     MainFrame.Visible = false
     
     -- Script TextBox
-    ScriptBox.Size = UDim2.new(0, 280, 0, 40)
-    ScriptBox.Position = UDim2.new(0.5, -140, 0.5, -30)
+    ScriptBox.Size = UDim2.new(0, 380, 0, 40)
+    ScriptBox.Position = UDim2.new(0.5, -190, 0.5, -30)
     ScriptBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     ScriptBox.TextColor3 = Color3.fromRGB(255, 255, 255)
     ScriptBox.PlaceholderText = "Place your require script here..."
@@ -181,6 +193,23 @@ local function createUI()
     
     StartFrame.Parent = ScreenGui
     MainFrame.Parent = ScreenGui
+    
+    -- Smooth Animation for Buttons
+    local function smoothButton(button)
+        button.MouseEnter:Connect(function()
+            local tween = TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(70, 70, 70)})
+            tween:Play()
+        end)
+        button.MouseLeave:Connect(function()
+            local tween = TweenService:Create(button, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 50, 50)})
+            tween:Play()
+        end)
+    end
+    
+    smoothButton(ScanButton)
+    smoothButton(MinimizeButton)
+    smoothButton(CloseButton)
+    smoothButton(ExecuteButton)
 end
 
 -- Execute
@@ -198,3 +227,76 @@ local function logBackdoors(backdoors)
     end
     file:close()
 end
+
+-- Additional Features to extend length and functionality
+
+-- Function to Display Logs in UI
+local function displayLogs()
+    local logFile = "backdoor_log.txt"
+    local file = io.open(logFile, "r")
+    if file then
+        local logs = file:read("*all")
+        file:close()
+        
+        local logFrame = Instance.new("Frame")
+        logFrame.Size = UDim2.new(0, 450, 0, 300)
+        logFrame.Position = UDim2.new(0.5, -225, 0.5, -150)
+        logFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        logFrame.BorderSizePixel = 2
+        logFrame.Draggable = true
+        logFrame.Active = true
+        logFrame.BorderMode = Enum.BorderMode.Outline
+        logFrame.BorderColor3 = Color3.fromRGB(70, 70, 70)
+        logFrame.BackgroundTransparency = 0.1
+        logFrame.Parent = game.CoreGui
+        
+        local logText = Instance.new("TextLabel")
+        logText.Size = UDim2.new(1, -20, 1, -20)
+        logText.Position = UDim2.new(0, 10, 0, 10)
+        logText.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        logText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        logText.Text = logs
+        logText.TextSize = 14
+        logText.TextWrapped = true
+        logText.TextXAlignment = Enum.TextXAlignment.Left
+        logText.TextYAlignment = Enum.TextYAlignment.Top
+        logText.Parent = logFrame
+        
+        local closeLogButton = Instance.new("TextButton")
+        closeLogButton.Size = UDim2.new(0, 100, 0, 40)
+        closeLogButton.Position = UDim2.new(0.5, -50, 1, -50)
+        closeLogButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+        closeLogButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        closeLogButton.Text = "Close"
+        closeLogButton.TextSize = 18
+        closeLogButton.BorderSizePixel = 2
+        closeLogButton.BorderColor3 = Color3.fromRGB(100, 100, 100)
+        closeLogButton.Parent = logFrame
+        closeLogButton.MouseButton1Click:Connect(function()
+            logFrame:Destroy()
+        end)
+    end
+end
+
+-- Display Logs Button
+local function createDisplayLogsButton(parent)
+    local displayLogsButton = Instance.new("TextButton")
+    displayLogsButton.Text = "Display Logs"
+    displayLogsButton.Size = UDim2.new(0, 100, 0, 40)
+    displayLogsButton.Position = UDim2.new(0.5, -50, 0.5, 60)
+    displayLogsButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    displayLogsButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    displayLogsButton.TextSize = 18
+    displayLogsButton.BorderSizePixel = 2
+    displayLogsButton.BorderColor3 = Color3.fromRGB(100, 100, 100)
+    displayLogsButton.Parent = parent
+    displayLogsButton.MouseButton1Click:Connect(displayLogs)
+    
+    return displayLogsButton
+end
+
+-- Create Display Logs Button in Main Frame
+createDisplayLogsButton(MainFrame)
+
+-- Smooth Button Animation for Display Logs Button
+smoothButton(displayLogsButton)
