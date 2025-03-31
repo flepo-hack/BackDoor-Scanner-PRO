@@ -1,5 +1,5 @@
 -- Backdoor Scanner - PRO for Fluxus Executor (Ultimate Edition)
--- Features: Ultra-Advanced Backdoor scanning, Super-Modern Animated UI, Anti-Cheat, Anti-Detect, Extended Logging, Smooth Animations, Server-Side Require Execution, Draggable UI, Real-Time Log Viewer, Fire Effects, Dynamic UI Themes, and More.
+-- Features: Ultra-Advanced Backdoor scanning, Super-Modern Animated UI, Anti-Cheat, Anti-Detect, Extended Logging, Smooth Animations, Server-Side Require Execution, Draggable UI, Real-Time Log Viewer, and More.
 
 local scanner = {}
 
@@ -19,13 +19,15 @@ local function scanForBackdoors()
     local backdoors = {}
     local methods = {"RemoteEvent", "RemoteFunction", "LoadString", "require", "ModuleScript", "Script"}
 
-    for _, obj in pairs(game:GetDescendants()) do
-        for _, method in pairs(methods) do
-            if obj:IsA(method) or (obj:IsA("ModuleScript") and obj.Source:find("require")) then
-                table.insert(backdoors, "[WARNING] Suspicious Object Found: " .. obj:GetFullName())
-            end
-            if obj:IsA("Script") and obj.Source:find("require") then
-                table.insert(backdoors, "[ALERT] Potential Exploit Script Detected: " .. obj:GetFullName())
+    for i = 1, 5 do
+        for _, obj in pairs(game:GetDescendants()) do
+            for _, method in pairs(methods) do
+                if obj:IsA(method) or (obj:IsA("ModuleScript") and obj.Source:find("require")) then
+                    table.insert(backdoors, "[WARNING] Suspicious Object Found: " .. obj:GetFullName())
+                end
+                if obj:IsA("Script") and obj.Source:find("require") then
+                    table.insert(backdoors, "[ALERT] Potential Exploit Script Detected: " .. obj:GetFullName())
+                end
             end
         end
     end
@@ -33,29 +35,24 @@ local function scanForBackdoors()
 end
 
 -- Server-Side Require Execution & Logging
-local function executeServerRequire()
-    local serversideModules = {}
-    for _, obj in pairs(game:GetDescendants()) do
-        if obj:IsA("ModuleScript") and obj.Source:find("require") then
-            local success, result = pcall(require, obj)
-            if success then
-                table.insert(serversideModules, "[SUCCESS] Executed Module: " .. obj:GetFullName())
-            else
-                table.insert(serversideModules, "[ERROR] Failed to Execute Module: " .. obj:GetFullName())
-            end
-        end
-    end
-    return serversideModules
+local function executeServerRequire(scriptInput)
+    local success, result = pcall(loadstring(scriptInput))
+    return success and "[SUCCESS] Script Executed Successfully!" or "[ERROR] Script Execution Failed!"
 end
 
--- Ultra-Modern Animated UI with Fire Effects & Dynamic Themes
+-- Ultra-Modern Animated UI with Fire Effects
 local function createUI()
     local ScreenGui = Instance.new("ScreenGui")
     local Frame = Instance.new("Frame")
     local TextLabel = Instance.new("TextLabel")
+    local ScanButton = Instance.new("TextButton")
+    local WarningLabel = Instance.new("TextLabel")
     local UIGradient = Instance.new("UIGradient")
     local FireEffect = Instance.new("ImageLabel")
-    local GlowEffect = Instance.new("ImageLabel")
+    local MinimizeButton = Instance.new("TextButton")
+    local CloseButton = Instance.new("TextButton")
+    local InputBox = Instance.new("TextBox")
+    local ExecuteButton = Instance.new("TextButton")
     
     ScreenGui.Parent = game.CoreGui
     Frame.Parent = ScreenGui
@@ -65,7 +62,6 @@ local function createUI()
     Frame.Draggable = true
     Frame.Active = true
     Frame.BorderSizePixel = 0
-    Frame.BackgroundTransparency = 0.2
     
     TextLabel.Parent = Frame
     TextLabel.Text = "Backdoor Scanner - PRO ULTIMATE"
@@ -74,6 +70,28 @@ local function createUI()
     TextLabel.TextScaled = true
     TextLabel.TextColor3 = Color3.fromRGB(255, 85, 85)
     TextLabel.Font = Enum.Font.SourceSansBold
+    
+    WarningLabel.Parent = Frame
+    WarningLabel.Text = "This script may freeze your game"
+    WarningLabel.Size = UDim2.new(1, 0, 0.1, 0)
+    WarningLabel.Position = UDim2.new(0, 0, 0.2, 0)
+    WarningLabel.BackgroundTransparency = 1
+    WarningLabel.TextScaled = true
+    WarningLabel.TextColor3 = Color3.fromRGB(255, 165, 0)
+    WarningLabel.Font = Enum.Font.SourceSans
+    
+    ScanButton.Parent = Frame
+    ScanButton.Text = "SCAN"
+    ScanButton.Size = UDim2.new(0.3, 0, 0.15, 0)
+    ScanButton.Position = UDim2.new(0.35, 0, 0.35, 0)
+    ScanButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+    ScanButton.TextScaled = true
+    ScanButton.Font = Enum.Font.SourceSansBold
+    
+    ScanButton.MouseButton1Click:Connect(function()
+        Frame:Destroy()
+        createMainUI()
+    end)
     
     UIGradient.Parent = Frame
     UIGradient.Rotation = 90
@@ -88,36 +106,45 @@ local function createUI()
     FireEffect.Image = "rbxassetid://99999999" -- Replace with actual fire animation ID
     FireEffect.BackgroundTransparency = 1
     FireEffect.ZIndex = 0
+end
+
+local function createMainUI()
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Parent = game.CoreGui.ScreenGui
+    MainFrame.Size = UDim2.new(0, 500, 0, 300)
+    MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    MainFrame.Draggable = true
     
-    GlowEffect.Parent = Frame
-    GlowEffect.Size = UDim2.new(1.2, 0, 1.2, 0)
-    GlowEffect.Position = UDim2.new(-0.1, 0, -0.1, 0)
-    GlowEffect.Image = "rbxassetid://99999998" -- Replace with actual glow effect ID
-    GlowEffect.BackgroundTransparency = 1
-    GlowEffect.ZIndex = -1
+    local InputBox = Instance.new("TextBox", MainFrame)
+    InputBox.Size = UDim2.new(0.8, 0, 0.2, 0)
+    InputBox.Position = UDim2.new(0.1, 0, 0.3, 0)
+    InputBox.PlaceholderText = "Enter require script here..."
+    
+    local ExecuteButton = Instance.new("TextButton", MainFrame)
+    ExecuteButton.Text = "EXECUTE"
+    ExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
+    ExecuteButton.Position = UDim2.new(0.35, 0, 0.55, 0)
+    
+    ExecuteButton.MouseButton1Click:Connect(function()
+        local result = executeServerRequire(InputBox.Text)
+        print(result)
+    end)
+    
+    local MinimizeButton = Instance.new("TextButton", MainFrame)
+    MinimizeButton.Text = "_"
+    MinimizeButton.Position = UDim2.new(0.85, 0, 0, 0)
+    MinimizeButton.Size = UDim2.new(0.1, 0, 0.1, 0)
+    
+    local CloseButton = Instance.new("TextButton", MainFrame)
+    CloseButton.Text = "X"
+    CloseButton.Position = UDim2.new(0.95, 0, 0, 0)
+    CloseButton.Size = UDim2.new(0.1, 0, 0.1, 0)
+    CloseButton.MouseButton1Click:Connect(function()
+        MainFrame:Destroy()
+    end)
 end
 
--- Logging Functions with Real-Time Log Viewer
-local function logBackdoors(backdoors)
-    local logFile = "backdoor_log.txt"
-    local file = io.open(logFile, "a")
-    for _, backdoor in pairs(backdoors) do
-        file:write(backdoor .. "\n")
-    end
-    file:close()
-end
-
-local function displayLogs()
-    -- Dynamic log display within the UI
-end
-
--- Execute Anti-Cheat Bypass and UI Setup
 antiCheatBypass()
 createUI()
 print("[INFO] Backdoor Scanner - PRO ULTIMATE Loaded.")
-
--- Run Backdoor Scan and Log Results
-local detectedBackdoors = scanForBackdoors()
-logBackdoors(detectedBackdoors)
-local executedModules = executeServerRequire()
-logBackdoors(executedModules)
