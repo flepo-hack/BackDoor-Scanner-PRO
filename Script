@@ -1,5 +1,5 @@
 -- Backdoor Scanner - PRO for Fluxus Executor (Ultimate Edition)
--- Features: Ultra-Advanced Backdoor scanning, Super-Modern Animated UI, Anti-Cheat, Anti-Detect, Extended Logging, Smooth Animations, Server-Side Require Execution, Draggable UI, Real-Time Log Viewer, and More.
+-- Features: Ultra-Advanced Backdoor scanning, Super-Modern Animated UI, Anti-Cheat, Anti-Detect, Extended Logging, Smooth Animations, Server-Side Require Execution, Draggable UI, Real-Time Log Viewer, RemoteStorage Integration, RemoteEvent, RemoteFunction, and More.
 
 local scanner = {}
 
@@ -34,10 +34,45 @@ local function scanForBackdoors()
     return backdoors
 end
 
--- Server-Side Require Execution & Logging
+-- Server-Side Require Execution & Logging via RemoteStorage
 local function executeServerRequire(scriptInput)
     local success, result = pcall(loadstring(scriptInput))
     return success and "[SUCCESS] Script Executed Successfully!" or "[ERROR] Script Execution Failed!"
+end
+
+local function executeRemoteStorage(scriptName)
+    local RemoteStorage = game:GetService("ReplicatedStorage")
+    local remoteScript = RemoteStorage:FindFirstChild(scriptName)
+    if remoteScript and remoteScript:IsA("ModuleScript") then
+        local success, result = pcall(require, remoteScript)
+        return success and "[SUCCESS] Remote Script Executed Successfully!" or "[ERROR] Remote Script Execution Failed!"
+    else
+        return "[ERROR] Script not found or is not a ModuleScript."
+    end
+end
+
+-- Execute RemoteEvent
+local function executeRemoteEvent(eventName, ...)
+    local RemoteStorage = game:GetService("ReplicatedStorage")
+    local remoteEvent = RemoteStorage:FindFirstChild(eventName)
+    if remoteEvent and remoteEvent:IsA("RemoteEvent") then
+        remoteEvent:FireServer(...)
+        return "[SUCCESS] RemoteEvent Fired Successfully!"
+    else
+        return "[ERROR] RemoteEvent not found."
+    end
+end
+
+-- Execute RemoteFunction
+local function executeRemoteFunction(functionName, ...)
+    local RemoteStorage = game:GetService("ReplicatedStorage")
+    local remoteFunction = RemoteStorage:FindFirstChild(functionName)
+    if remoteFunction and remoteFunction:IsA("RemoteFunction") then
+        local success, result = pcall(remoteFunction.InvokeServer, remoteFunction, ...)
+        return success and "[SUCCESS] RemoteFunction Invoked Successfully!" or "[ERROR] RemoteFunction Invocation Failed!"
+    else
+        return "[ERROR] RemoteFunction not found."
+    end
 end
 
 -- Ultra-Modern Animated UI with Fire Effects
@@ -55,6 +90,7 @@ local function createUI()
     local ExecuteButton = Instance.new("TextButton")
     
     ScreenGui.Parent = game.CoreGui
+    ScreenGui.Name = "BackdoorScannerUI"
     Frame.Parent = ScreenGui
     Frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
     Frame.Size = UDim2.new(0, 450, 0, 250)
@@ -96,7 +132,7 @@ local function createUI()
 
         -- Destroy the current UI and create the main UI
         Frame:Destroy()
-        createMainUI()
+        createMainUI(ScreenGui)
     end)
     
     UIGradient.Parent = Frame
@@ -114,9 +150,9 @@ local function createUI()
     FireEffect.ZIndex = 0
 end
 
-local function createMainUI()
+local function createMainUI(ScreenGui)
     local MainFrame = Instance.new("Frame")
-    MainFrame.Parent = game.CoreGui.ScreenGui
+    MainFrame.Parent = ScreenGui
     MainFrame.Size = UDim2.new(0, 500, 0, 300)
     MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
     MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
@@ -134,6 +170,51 @@ local function createMainUI()
     
     ExecuteButton.MouseButton1Click:Connect(function()
         local result = executeServerRequire(InputBox.Text)
+        print(result)
+    end)
+
+    local RemoteBox = Instance.new("TextBox", MainFrame)
+    RemoteBox.Size = UDim2.new(0.8, 0, 0.2, 0)
+    RemoteBox.Position = UDim2.new(0.1, 0, 0.5, 0)
+    RemoteBox.PlaceholderText = "Enter RemoteStorage script name here..."
+
+    local RemoteExecuteButton = Instance.new("TextButton", MainFrame)
+    RemoteExecuteButton.Text = "EXECUTE REMOTE"
+    RemoteExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
+    RemoteExecuteButton.Position = UDim2.new(0.35, 0, 0.75, 0)
+    
+    RemoteExecuteButton.MouseButton1Click:Connect(function()
+        local result = executeRemoteStorage(RemoteBox.Text)
+        print(result)
+    end)
+
+    local RemoteEventBox = Instance.new("TextBox", MainFrame)
+    RemoteEventBox.Size = UDim2.new(0.8, 0, 0.2, 0)
+    RemoteEventBox.Position = UDim2.new(0.1, 0, 0.65, 0)
+    RemoteEventBox.PlaceholderText = "Enter RemoteEvent name here..."
+
+    local RemoteEventExecuteButton = Instance.new("TextButton", MainFrame)
+    RemoteEventExecuteButton.Text = "EXECUTE REMOTEEVENT"
+    RemoteEventExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
+    RemoteEventExecuteButton.Position = UDim2.new(0.35, 0, 0.9, 0)
+
+    RemoteEventExecuteButton.MouseButton1Click:Connect(function()
+        local result = executeRemoteEvent(RemoteEventBox.Text)
+        print(result)
+    end)
+
+    local RemoteFunctionBox = Instance.new("TextBox", MainFrame)
+    RemoteFunctionBox.Size = UDim2.new(0.8, 0, 0.2, 0)
+    RemoteFunctionBox.Position = UDim2.new(0.1, 0, 0.8, 0)
+    RemoteFunctionBox.PlaceholderText = "Enter RemoteFunction name here..."
+
+    local RemoteFunctionExecuteButton = Instance.new("TextButton", MainFrame)
+    RemoteFunctionExecuteButton.Text = "EXECUTE REMOTEFUNCTION"
+    RemoteFunctionExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
+    RemoteFunctionExecuteButton.Position = UDim2.new(0.35, 0, 1.05, 0)
+
+    RemoteFunctionExecuteButton.MouseButton1Click:Connect(function()
+        local result = executeRemoteFunction(RemoteFunctionBox.Text)
         print(result)
     end)
     
