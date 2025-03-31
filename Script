@@ -85,11 +85,6 @@ local function animateBorder(UIBorder)
     end
 end
 
--- Function to inject into Roblox
-local function injectToRoblox()
-    -- Lisää injektointikoodi tähän
-end
-
 -- Function to add shadow effect to text
 local function addShadow(textLabel)
     local TextShadow = Instance.new("TextLabel")
@@ -116,13 +111,12 @@ local function createUI()
     ScreenGui.Parent = game.CoreGui
     ScreenGui.Name = "BackdoorScannerUI"
     Frame.Parent = ScreenGui
-    Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Frame.Size = UDim2.new(0, 450, 0, 250)
-    Frame.Position = UDim2.new(0.5, -225, 0.5, -125)
+    Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Darker background for better contrast
+    Frame.Size = UDim2.new(0, 450, 0, 300) -- Increased height for better spacing
+    Frame.Position = UDim2.new(0.5, -225, 0.5, -150)
     Frame.Draggable = true
     Frame.Active = true
     Frame.BorderSizePixel = 0
-    Frame.BackgroundTransparency = 1 -- Fully transparent background
 
     -- Add RGB Border
     local UIBorder = Instance.new("UIStroke")
@@ -156,7 +150,8 @@ local function createUI()
     ScanButton.Text = "SCAN"
     ScanButton.Size = UDim2.new(0.3, 0, 0.15, 0)
     ScanButton.Position = UDim2.new(0.35, 0, 0.35, 0)
-    ScanButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ScanButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Lighter color for better contrast
+    ScanButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     ScanButton.TextScaled = true
     ScanButton.Font = Enum.Font.SourceSansBold
     ScanButton.BorderSizePixel = 0
@@ -169,11 +164,37 @@ local function createUI()
 
     -- Scan button functionality
     ScanButton.MouseButton1Click:Connect(function()
+        -- Show loading bar
+        local LoadingFrame = Instance.new("Frame")
+        LoadingFrame.Parent = Frame
+        LoadingFrame.Size = UDim2.new(0.8, 0, 0.1, 0)
+        LoadingFrame.Position = UDim2.new(0.1, 0, 0.55, 0)
+        LoadingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        LoadingFrame.BackgroundTransparency = 1
+        local LoadingBorder = Instance.new("UIStroke")
+        LoadingBorder.Parent = LoadingFrame
+        LoadingBorder.Thickness = 4
+        LoadingBorder.Color = Color3.fromRGB(255, 0, 0)
+        LoadingBorder.Transparency = 0.5
+        local LoadingBar = Instance.new("Frame")
+        LoadingBar.Parent = LoadingFrame
+        LoadingBar.Size = UDim2.new(0, 0, 1, 0)
+        LoadingBar.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+        local LoadingBarCorner = Instance.new("UICorner")
+        LoadingBarCorner.CornerRadius = UDim.new(0, 10)
+        LoadingBarCorner.Parent = LoadingBar
+
+        spawn(function()
+            animateBorder(LoadingBorder)
+            for i = 0, 1, 0.01 do
+                LoadingBar.Size = UDim2.new(i, 0, 1, 0)
+                wait(0.1)
+            end
+        end)
+
+        -- Perform scan
         local backdoors = scanForBackdoors()
         print("Scan completed. Found backdoors: " .. #backdoors)
-
-        -- Inject to Roblox and ensure server-side works better through backdoors
-        injectToRoblox()
 
         -- Switch to main UI without creating a new one
         Frame:Destroy()
@@ -194,11 +215,11 @@ local function createMainUI(ScreenGui)
     MainFrame.Parent = ScreenGui
     MainFrame.Size = UDim2.new(0, 500, 0, 300)
     MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Darker background for better contrast
     MainFrame.Draggable = true
     MainFrame.Active = true
     MainFrame.BorderSizePixel = 0
-    MainFrame.BackgroundTransparency = 0.2 -- Transparent background
+    MainFrame.BackgroundTransparency = 0.2
 
     -- Add RGB Border
     local UIBorder = Instance.new("UIStroke")
@@ -213,7 +234,8 @@ local function createMainUI(ScreenGui)
     InputBox.Size = UDim2.new(0.8, 0, 0.2, 0)
     InputBox.Position = UDim2.new(0.1, 0, 0.3, 0)
     InputBox.PlaceholderText = "Enter require script here..."
-    InputBox.BackgroundTransparency = 0.5
+    InputBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    InputBox.BackgroundTransparency = 0.1
     InputBox.BorderSizePixel = 0
     InputBox.TextScaled = true
     InputBox.Font = Enum.Font.SourceSans
@@ -224,7 +246,8 @@ local function createMainUI(ScreenGui)
     ExecuteButton.Text = "EXECUTE"
     ExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
     ExecuteButton.Position = UDim2.new(0.35, 0, 0.55, 0)
-    ExecuteButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+    ExecuteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     ExecuteButton.TextScaled = true
     ExecuteButton.Font = Enum.Font.SourceSansBold
     ExecuteButton.BorderSizePixel = 0
@@ -244,7 +267,8 @@ local function createMainUI(ScreenGui)
     RemoteBox.Size = UDim2.new(0.8, 0, 0.2, 0)
     RemoteBox.Position = UDim2.new(0.1, 0, 0.5, 0)
     RemoteBox.PlaceholderText = "Enter RemoteStorage script name here..."
-    RemoteBox.BackgroundTransparency = 0.5
+    RemoteBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    RemoteBox.BackgroundTransparency = 0.1
     RemoteBox.BorderSizePixel = 0
     RemoteBox.TextScaled = true
     RemoteBox.Font = Enum.Font.SourceSans
@@ -255,7 +279,8 @@ local function createMainUI(ScreenGui)
     RemoteExecuteButton.Text = "EXECUTE REMOTE"
     RemoteExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
     RemoteExecuteButton.Position = UDim2.new(0.35, 0, 0.75, 0)
-    RemoteExecuteButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    RemoteExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+    RemoteExecuteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     RemoteExecuteButton.TextScaled = true
     RemoteExecuteButton.Font = Enum.Font.SourceSansBold
     RemoteExecuteButton.BorderSizePixel = 0
@@ -275,7 +300,8 @@ local function createMainUI(ScreenGui)
     RemoteEventBox.Size = UDim2.new(0.8, 0, 0.2, 0)
     RemoteEventBox.Position = UDim2.new(0.1, 0, 0.65, 0)
     RemoteEventBox.PlaceholderText = "Enter RemoteEvent name here..."
-    RemoteEventBox.BackgroundTransparency = 0.5
+    RemoteEventBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    RemoteEventBox.BackgroundTransparency = 0.1
     RemoteEventBox.BorderSizePixel = 0
     RemoteEventBox.TextScaled = true
     RemoteEventBox.Font = Enum.Font.SourceSans
@@ -286,7 +312,8 @@ local function createMainUI(ScreenGui)
     RemoteEventExecuteButton.Text = "EXECUTE REMOTEEVENT"
     RemoteEventExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
     RemoteEventExecuteButton.Position = UDim2.new(0.35, 0, 0.9, 0)
-    RemoteEventExecuteButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    RemoteEventExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+    RemoteEventExecuteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     RemoteEventExecuteButton.TextScaled = true
     RemoteEventExecuteButton.Font = Enum.Font.SourceSansBold
     RemoteEventExecuteButton.BorderSizePixel = 0
@@ -306,7 +333,8 @@ local function createMainUI(ScreenGui)
     RemoteFunctionBox.Size = UDim2.new(0.8, 0, 0.2, 0)
     RemoteFunctionBox.Position = UDim2.new(0.1, 0, 0.8, 0)
     RemoteFunctionBox.PlaceholderText = "Enter RemoteFunction name here..."
-    RemoteFunctionBox.BackgroundTransparency = 0.5
+    RemoteFunctionBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    RemoteFunctionBox.BackgroundTransparency = 0.1
     RemoteFunctionBox.BorderSizePixel = 0
     RemoteFunctionBox.TextScaled = true
     RemoteFunctionBox.Font = Enum.Font.SourceSans
@@ -317,7 +345,8 @@ local function createMainUI(ScreenGui)
     RemoteFunctionExecuteButton.Text = "EXECUTE REMOTEFUNCTION"
     RemoteFunctionExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
     RemoteFunctionExecuteButton.Position = UDim2.new(0.35, 0, 1.05, 0)
-    RemoteFunctionExecuteButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    RemoteFunctionExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+    RemoteFunctionExecuteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     RemoteFunctionExecuteButton.TextScaled = true
     RemoteFunctionExecuteButton.Font = Enum.Font.SourceSansBold
     RemoteFunctionExecuteButton.BorderSizePixel = 0
@@ -335,39 +364,4 @@ local function createMainUI(ScreenGui)
     
     local MinimizeButton = Instance.new("TextButton", MainFrame)
     MinimizeButton.Text = "_"
-    MinimizeButton.Position = UDim2.new(0.85, 0, 0, 0)
-    MinimizeButton.Size = UDim2.new(0.1, 0, 0.1, 0)
-    MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    MinimizeButton.TextScaled = true
-    MinimizeButton.Font = Enum.Font.SourceSansBold
-    MinimizeButton.BorderSizePixel = 0
-
-    -- Add corner radius
-    local MinimizeButtonCorner = Instance.new("UICorner")
-    MinimizeButtonCorner.CornerRadius = UDim.new(0, 10)
-    MinimizeButtonCorner.Parent = MinimizeButton
-    addShadow(MinimizeButton)
-    
-    local CloseButton = Instance.new("TextButton", MainFrame)
-    CloseButton.Text = "X"
-    CloseButton.Position = UDim2.new(0.95, 0, 0, 0)
-    CloseButton.Size = UDim2.new(0.1, 0, 0.1, 0)
-    CloseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    CloseButton.TextScaled = true
-    CloseButton.Font = Enum.Font.SourceSansBold
-    CloseButton.BorderSizePixel = 0
-
-    -- Add corner radius
-    local CloseButtonCorner = Instance.new("UICorner")
-    CloseButtonCorner.CornerRadius = UDim.new(0, 10)
-    CloseButtonCorner.Parent = CloseButton
-    addShadow(CloseButton)
-
-    CloseButton.MouseButton1Click:Connect(function()
-        MainFrame:Destroy()
-    end)
-end
-
-antiCheatBypass()
-createUI()
-print("[INFO] Backdoor Scanner - PRO ULTIMATE Loaded.")
+    MinimizeButton.Position = UDim2.new(0.85,
