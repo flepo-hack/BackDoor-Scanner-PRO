@@ -1,4 +1,44 @@
--- Backdoor Scanner - PRO for Fluxus Executor (Ultimate Edition)
+    MinimizeButton.Text = "_"
+    MinimizeButton.Position = UDim2.new(0.85, 0, 0, 0)
+    MinimizeButton.Size = UDim2.new(0.1, 0, 0.1, 0)
+    MinimizeButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    MinimizeButton.TextScaled = true
+    MinimizeButton.Font = Enum.Font.SourceSansBold
+    MinimizeButton.BorderSizePixel = 0
+
+    -- Add corner radius
+    local MinimizeButtonCorner = Instance.new("UICorner")
+    MinimizeButtonCorner.CornerRadius = UDim.new(0, 10)
+    MinimizeButtonCorner.Parent = MinimizeButton
+    addShadow(MinimizeButton)
+
+    MinimizeButton.MouseButton1Click:Connect(function()
+        MainFrame.Visible = not MainFrame.Visible
+    end)
+
+    local CloseButton = Instance.new("TextButton", MainFrame)
+    CloseButton.Text = "X"
+    CloseButton.Position = UDim2.new(0.95, 0, 0, 0)
+    CloseButton.Size = UDim2.new(0.1, 0, 0.1, 0)
+    CloseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    CloseButton.TextScaled = true
+    CloseButton.Font = Enum.Font.SourceSansBold
+    CloseButton.BorderSizePixel = 0
+
+    -- Add corner radius
+    local CloseButtonCorner = Instance.new("UICorner")
+    CloseButtonCorner.CornerRadius = UDim.new(0, 10)
+    CloseButtonCorner.Parent = CloseButton
+    addShadow(CloseButton)
+
+    CloseButton.MouseButton1Click:Connect(function()
+        MainFrame:Destroy()
+    end)
+end
+
+antiCheatBypass()
+createUI()
+print("[INFO] Backdoor Scanner - PRO ULTIMATE Loaded.")-- Backdoor Scanner - PRO for Fluxus Executor (Ultimate Edition)
 -- Features: Ultra-Advanced Backdoor scanning, Super-Modern Animated UI, Anti-Cheat, Anti-Detect, Extended Logging, Smooth Animations, Server-Side Require Execution, Draggable UI, Real-Time Log Viewer, RemoteStorage Integration, RemoteEvent, RemoteFunction, and More.
 
 local scanner = {}
