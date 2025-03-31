@@ -85,6 +85,20 @@ local function animateBorder(UIBorder)
     end
 end
 
+-- Function to add shadow effect to text
+local function addShadow(textLabel)
+    local TextShadow = Instance.new("TextLabel")
+    TextShadow.Parent = textLabel.Parent
+    TextShadow.Position = textLabel.Position + UDim2.new(0, 2, 0, 2)
+    TextShadow.Size = textLabel.Size
+    TextShadow.Text = textLabel.Text
+    TextShadow.TextColor3 = Color3.fromRGB(0, 0, 0)
+    TextShadow.TextTransparency = 0.7
+    TextShadow.ZIndex = textLabel.ZIndex - 1
+    TextShadow.Font = textLabel.Font
+    TextShadow.TextScaled = textLabel.TextScaled
+end
+
 -- Ultra-Modern Animated UI with RGB Border
 local function createUI()
     local ScreenGui = Instance.new("ScreenGui")
@@ -121,6 +135,7 @@ local function createUI()
     TextLabel.TextScaled = true
     TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     TextLabel.Font = Enum.Font.SourceSansBold
+    addShadow(TextLabel)
     
     WarningLabel.Parent = Frame
     WarningLabel.Text = "This script may freeze your game"
@@ -130,6 +145,7 @@ local function createUI()
     WarningLabel.TextScaled = true
     WarningLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
     WarningLabel.Font = Enum.Font.SourceSans
+    addShadow(WarningLabel)
     
     ScanButton.Parent = Frame
     ScanButton.Text = "SCAN"
@@ -144,13 +160,17 @@ local function createUI()
     local ScanButtonCorner = Instance.new("UICorner")
     ScanButtonCorner.CornerRadius = UDim.new(0, 10)
     ScanButtonCorner.Parent = ScanButton
+    addShadow(ScanButton)
 
     -- Scan button functionality
     ScanButton.MouseButton1Click:Connect(function()
         local backdoors = scanForBackdoors()
         print("Scan completed. Found backdoors: " .. #backdoors)
 
-        -- Destroy the current UI and create the main UI
+        -- Inject to Roblox and ensure server-side works better through backdoors
+        -- Add your inject function here
+
+        -- Switch to main UI without creating a new one
         Frame:Destroy()
         createMainUI(ScreenGui)
     end)
@@ -193,6 +213,7 @@ local function createMainUI(ScreenGui)
     InputBox.TextScaled = true
     InputBox.Font = Enum.Font.SourceSans
     InputBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+    addShadow(InputBox)
 
     local ExecuteButton = Instance.new("TextButton", MainFrame)
     ExecuteButton.Text = "EXECUTE"
@@ -207,6 +228,7 @@ local function createMainUI(ScreenGui)
     local ExecuteButtonCorner = Instance.new("UICorner")
     ExecuteButtonCorner.CornerRadius = UDim.new(0, 10)
     ExecuteButtonCorner.Parent = ExecuteButton
+    addShadow(ExecuteButton)
 
     ExecuteButton.MouseButton1Click:Connect(function()
         local result = executeServerRequire(InputBox.Text)
@@ -222,6 +244,7 @@ local function createMainUI(ScreenGui)
     RemoteBox.TextScaled = true
     RemoteBox.Font = Enum.Font.SourceSans
     RemoteBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+    addShadow(RemoteBox)
 
     local RemoteExecuteButton = Instance.new("TextButton", MainFrame)
     RemoteExecuteButton.Text = "EXECUTE REMOTE"
@@ -236,6 +259,7 @@ local function createMainUI(ScreenGui)
     local RemoteExecuteButtonCorner = Instance.new("UICorner")
     RemoteExecuteButtonCorner.CornerRadius = UDim.new(0, 10)
     RemoteExecuteButtonCorner.Parent = RemoteExecuteButton
+    addShadow(RemoteExecuteButton)
 
     RemoteExecuteButton.MouseButton1Click:Connect(function()
         local result = executeRemoteStorage(RemoteBox.Text)
@@ -251,6 +275,7 @@ local function createMainUI(ScreenGui)
     RemoteEventBox.TextScaled = true
     RemoteEventBox.Font = Enum.Font.SourceSans
     RemoteEventBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+    addShadow(RemoteEventBox)
 
     local RemoteEventExecuteButton = Instance.new("TextButton", MainFrame)
     RemoteEventExecuteButton.Text = "EXECUTE REMOTEEVENT"
@@ -265,6 +290,7 @@ local function createMainUI(ScreenGui)
     local RemoteEventExecuteButtonCorner = Instance.new("UICorner")
     RemoteEventExecuteButtonCorner.CornerRadius = UDim.new(0, 10)
     RemoteEventExecuteButtonCorner.Parent = RemoteEventExecuteButton
+    addShadow(RemoteEventExecuteButton)
 
     RemoteEventExecuteButton.MouseButton1Click:Connect(function()
         local result = executeRemoteEvent(RemoteEventBox.Text)
@@ -280,6 +306,7 @@ local function createMainUI(ScreenGui)
     RemoteFunctionBox.TextScaled = true
     RemoteFunctionBox.Font = Enum.Font.SourceSans
     RemoteFunctionBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+    addShadow(RemoteFunctionBox)
 
     local RemoteFunctionExecuteButton = Instance.new("TextButton", MainFrame)
     RemoteFunctionExecuteButton.Text = "EXECUTE REMOTEFUNCTION"
@@ -294,6 +321,7 @@ local function createMainUI(ScreenGui)
     local RemoteFunctionExecuteButtonCorner = Instance.new("UICorner")
     RemoteFunctionExecuteButtonCorner.CornerRadius = UDim.new(0, 10)
     RemoteFunctionExecuteButtonCorner.Parent = RemoteFunctionExecuteButton
+    addShadow(RemoteFunctionExecuteButton)
 
     RemoteFunctionExecuteButton.MouseButton1Click:Connect(function()
         local result = executeRemoteFunction(RemoteFunctionBox.Text)
@@ -313,6 +341,7 @@ local function createMainUI(ScreenGui)
     local MinimizeButtonCorner = Instance.new("UICorner")
     MinimizeButtonCorner.CornerRadius = UDim.new(0, 10)
     MinimizeButtonCorner.Parent = MinimizeButton
+    addShadow(MinimizeButton)
     
     local CloseButton = Instance.new("TextButton", MainFrame)
     CloseButton.Text = "X"
@@ -327,6 +356,7 @@ local function createMainUI(ScreenGui)
     local CloseButtonCorner = Instance.new("UICorner")
     CloseButtonCorner.CornerRadius = UDim.new(0, 10)
     CloseButtonCorner.Parent = CloseButton
+    addShadow(CloseButton)
 
     CloseButton.MouseButton1Click:Connect(function()
         MainFrame:Destroy()
