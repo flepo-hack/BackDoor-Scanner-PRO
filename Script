@@ -107,7 +107,7 @@ local function createUI()
     Frame.Draggable = true
     Frame.Active = true
     Frame.BorderSizePixel = 0
-    Frame.BackgroundTransparency = 0.2 -- Transparent background
+    Frame.BackgroundTransparency = 0.5 -- Transparent background
 
     -- Add RGB Border
     local UIBorder = Instance.new("UIStroke")
