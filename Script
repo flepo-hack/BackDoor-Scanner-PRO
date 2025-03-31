@@ -62,7 +62,8 @@ local function createUI()
     Frame.Draggable = true
     Frame.Active = true
     Frame.BorderSizePixel = 0
-    
+    Frame.BackgroundTransparency = 0.5 -- Transparent background
+
     TextLabel.Parent = Frame
     TextLabel.Text = "Backdoor Scanner - PRO ULTIMATE"
     TextLabel.Size = UDim2.new(1, 0, 0.2, 0)
@@ -87,8 +88,13 @@ local function createUI()
     ScanButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
     ScanButton.TextScaled = true
     ScanButton.Font = Enum.Font.SourceSansBold
-    
+
+    -- Scan button functionality
     ScanButton.MouseButton1Click:Connect(function()
+        local backdoors = scanForBackdoors()
+        print("Scan completed. Found backdoors: " .. #backdoors)
+
+        -- Destroy the current UI and create the main UI
         Frame:Destroy()
         createMainUI()
     end)
