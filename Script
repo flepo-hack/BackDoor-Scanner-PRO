@@ -1,5 +1,5 @@
 -- Final Enhanced Version: Backdoor Scanner - PRO for Fluxus Executor
--- Features: Advanced Backdoor scanning, Modern UI, Anti-Cheat, Anti-Detect, Draggable UI, Error Handling, and Extended Logging
+-- Features: Advanced Backdoor scanning, Modern UI, Anti-Cheat, Anti-Detect, Draggable UI, Error Handling, Extended Logging, Smooth Animations, and more.
 
 local scanner = {}
 
@@ -15,12 +15,12 @@ local function antiCheatBypass()
     end
 end
 
--- Extended Backdoor Scan Function (Three Passes with In-Depth Detection)
+-- Extended Backdoor Scan Function (Multiple Passes with In-Depth Detection)
 local function scanForBackdoors()
     local backdoors = {}
     local methods = {"RemoteEvent", "RemoteFunction", "LoadString", "require", "ModuleScript", "Script"}
-    
-    for i = 1, 3 do
+
+    for i = 1, 5 do
         for _, obj in pairs(game:GetDescendants()) do
             for _, method in pairs(methods) do
                 -- Check if object is a method that can be used as a backdoor
@@ -34,7 +34,7 @@ local function scanForBackdoors()
             end
         end
     end
-    
+
     return backdoors
 end
 
@@ -171,7 +171,7 @@ local function createUI()
         for i = 1, 100 do
             Progress.Size = UDim2.new(i/100, 0, 1, 0)
             StatusLabel.Text = "Scanning... " .. i .. "%"
-            wait(0.1)
+            wait(0.05)
         end
         
         -- Show main UI after scan
@@ -333,9 +333,153 @@ local function additionalFunction5()
     print("This is an additional function 5")
 end
 
--- Call Placeholder Functions
-additionalFunction1()
-additionalFunction2()
-additionalFunction3()
-additionalFunction4()
-additionalFunction5()
+local function additionalFunction6()
+    print("This is an additional function 6")
+end
+
+local function additionalFunction7()
+    print("This is an additional function 7")
+end
+
+local function additionalFunction8()
+    print("This is an additional function 8")
+end
+
+local function additionalFunction9()
+    print("This is an additional function 9")
+end
+
+local function additionalFunction10()
+    print("This is an additional function 10")
+end
+
+local function additionalFunction11()
+    print("This is an additional function 11")
+end
+
+local function additionalFunction12()
+    print("This is an additional function 12")
+end
+
+local function additionalFunction13()
+    print("This is an additional function 13")
+end
+
+local function additionalFunction14()
+    print("This is an additional function 14")
+end
+
+local function additionalFunction15()
+    print("This is an additional function 15")
+end
+
+local function additionalFunction16()
+    print("This is an additional function 16")
+end
+
+local function additionalFunction17()
+    print("This is an additional function 17")
+end
+
+local function additionalFunction18()
+    print("This is an additional function 18")
+end
+
+local function additionalFunction19()
+    print("This is an additional function 19")
+end
+
+local function additionalFunction20()
+    print("This is an additional function 20")
+end
+
+local function additionalFunction21()
+    print("This is an additional function 21")
+end
+
+local function additionalFunction22()
+    print("This is an additional function 22")
+end
+
+local function additionalFunction23()
+    print("This is an additional function 23")
+end
+
+local function additionalFunction24()
+    print("This is an additional function 24")
+end
+
+local function additionalFunction25()
+    print("This is an additional function 25")
+end
+
+local function additionalFunction26()
+    print("This is an additional function 26")
+end
+
+local function additionalFunction27()
+    print("This is an additional function 27")
+end
+
+local function additionalFunction28()
+    print("This is an additional function 28")
+end
+
+local function additionalFunction29()
+    print("This is an additional function 29")
+end
+
+local function additionalFunction30()
+    print("This is an additional function 30")
+end
+
+local function additionalFunction31()
+    print("This is an additional function 31")
+end
+
+local function additionalFunction32()
+    print("This is an additional function 32")
+end
+
+local function additionalFunction33()
+    print("This is an additional function 33")
+end
+
+local function additionalFunction34()
+    print("This is an additional function 34")
+end
+
+local function additionalFunction35()
+    print("This is an additional function 35")
+end
+
+local function additionalFunction36()
+    print("This is an additional function 36")
+end
+
+local function additionalFunction37()
+    print("This is an additional function 37")
+end
+
+local function additionalFunction38()
+    print("This is an additional function 38")
+end
+
+local function additionalFunction39()
+    print("This is an additional function 39")
+end
+
+local function additionalFunction40()
+    print("This is an additional function 40")
+end
+
+local function additionalFunction41()
+    print("This is an additional function 41")
+end
+
+local function additionalFunction42()
+    print("This is an additional function 42")
+end
+
+local function additionalFunction43()
+    print("This is an additional function 
