@@ -37,7 +37,7 @@ end
 -- Server-Side Require Execution & Logging via RemoteStorage
 local function executeServerRequire(scriptInput)
     local success, result = pcall(loadstring(scriptInput))
-    return success and "[SUCCESS] Script Executed Successfully!" or "[ERROR] Script Execution Failed!"
+    return success and "[SUCCESS] Script Executed Successfully!" or "[ERROR] Script Execution Failed: " .. result
 end
 
 local function executeRemoteStorage(scriptName)
@@ -45,7 +45,7 @@ local function executeRemoteStorage(scriptName)
     local remoteScript = RemoteStorage:FindFirstChild(scriptName)
     if remoteScript and remoteScript:IsA("ModuleScript") then
         local success, result = pcall(require, remoteScript)
-        return success and "[SUCCESS] Remote Script Executed Successfully!" or "[ERROR] Remote Script Execution Failed!"
+        return success and "[SUCCESS] Remote Script Executed Successfully!" or "[ERROR] Remote Script Execution Failed: " .. result
     else
         return "[ERROR] Script not found or is not a ModuleScript."
     end
@@ -69,13 +69,13 @@ local function executeRemoteFunction(functionName, ...)
     local remoteFunction = RemoteStorage:FindFirstChild(functionName)
     if remoteFunction and remoteFunction:IsA("RemoteFunction") then
         local success, result = pcall(remoteFunction.InvokeServer, remoteFunction, ...)
-        return success and "[SUCCESS] RemoteFunction Invoked Successfully!" or "[ERROR] RemoteFunction Invocation Failed!"
+        return success and "[SUCCESS] RemoteFunction Invoked Successfully!" or "[ERROR] RemoteFunction Invocation Failed: " .. result
     else
         return "[ERROR] RemoteFunction not found."
     end
 end
 
--- Ultra-Modern Animated UI with Fire Effects
+-- Ultra-Modern Animated UI with RGB Border
 local function createUI()
     local ScreenGui = Instance.new("ScreenGui")
     local Frame = Instance.new("Frame")
@@ -83,7 +83,6 @@ local function createUI()
     local ScanButton = Instance.new("TextButton")
     local WarningLabel = Instance.new("TextLabel")
     local UIGradient = Instance.new("UIGradient")
-    local FireEffect = Instance.new("ImageLabel")
     local MinimizeButton = Instance.new("TextButton")
     local CloseButton = Instance.new("TextButton")
     local InputBox = Instance.new("TextBox")
@@ -99,6 +98,24 @@ local function createUI()
     Frame.Active = true
     Frame.BorderSizePixel = 0
     Frame.BackgroundTransparency = 0.5 -- Transparent background
+
+    -- Add RGB Border
+    local UIBorder = Instance.new("UIStroke")
+    UIBorder.Parent = Frame
+    UIBorder.Thickness = 2
+    UIBorder.Color = Color3.fromRGB(255, 0, 0)
+    UIBorder.Transparency = 0.5
+
+    -- Function to animate the RGB border
+    local function animateBorder()
+        local hue = 0
+        while true do
+            UIBorder.Color = Color3.fromHSV(hue, 1, 1)
+            hue = (hue + 0.01) % 1
+            wait(0.1)
+        end
+    end
+    spawn(animateBorder)
 
     TextLabel.Parent = Frame
     TextLabel.Text = "Backdoor Scanner - PRO ULTIMATE"
@@ -124,6 +141,12 @@ local function createUI()
     ScanButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
     ScanButton.TextScaled = true
     ScanButton.Font = Enum.Font.SourceSansBold
+    ScanButton.BorderSizePixel = 0
+
+    -- Add corner radius
+    local ScanButtonCorner = Instance.new("UICorner")
+    ScanButtonCorner.CornerRadius = UDim.new(0, 10)
+    ScanButtonCorner.Parent = ScanButton
 
     -- Scan button functionality
     ScanButton.MouseButton1Click:Connect(function()
@@ -141,16 +164,8 @@ local function createUI()
         ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)),
         ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 0, 0))
     }
-    
-    FireEffect.Parent = Frame
-    FireEffect.Size = UDim2.new(1.2, 0, 1.2, 0)
-    FireEffect.Position = UDim2.new(-0.1, 0, -0.1, 0)
-    FireEffect.Image = "rbxassetid://10578907985" -- A placeholder fire animation ID
-    FireEffect.BackgroundTransparency = 1
-    FireEffect.ZIndex = 0
 end
 
--- Määritellään createMainUI-funktio ennen sen kutsumista
 local function createMainUI(ScreenGui)
     local MainFrame = Instance.new("Frame")
     MainFrame.Parent = ScreenGui
@@ -158,17 +173,52 @@ local function createMainUI(ScreenGui)
     MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
     MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
     MainFrame.Draggable = true
-    
+    MainFrame.Active = true
+    MainFrame.BorderSizePixel = 0
+    MainFrame.BackgroundTransparency = 0.5 -- Transparent background
+
+    -- Add RGB Border
+    local UIBorder = Instance.new("UIStroke")
+    UIBorder.Parent = MainFrame
+    UIBorder.Thickness = 2
+    UIBorder.Color = Color3.fromRGB(255, 0, 0)
+    UIBorder.Transparency = 0.5
+
+    -- Function to animate the RGB border
+    local function animateBorder()
+        local hue = 0
+        while true do
+            UIBorder.Color = Color3.fromHSV(hue, 1, 1)
+            hue = (hue + 0.01) % 1
+            wait(0.1)
+        end
+    end
+    spawn(animateBorder)
+
     local InputBox = Instance.new("TextBox", MainFrame)
     InputBox.Size = UDim2.new(0.8, 0, 0.2, 0)
     InputBox.Position = UDim2.new(0.1, 0, 0.3, 0)
     InputBox.PlaceholderText = "Enter require script here..."
-    
+    InputBox.BackgroundTransparency = 0.5
+    InputBox.BorderSizePixel = 0
+    InputBox.TextScaled = true
+    InputBox.Font = Enum.Font.SourceSans
+    InputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+
     local ExecuteButton = Instance.new("TextButton", MainFrame)
     ExecuteButton.Text = "EXECUTE"
     ExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
     ExecuteButton.Position = UDim2.new(0.35, 0, 0.55, 0)
-    
+    ExecuteButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+    ExecuteButton.TextScaled = true
+    ExecuteButton.Font = Enum.Font.SourceSansBold
+    ExecuteButton.BorderSizePixel = 0
+
+    -- Add corner radius
+    local ExecuteButtonCorner = Instance.new("UICorner")
+    ExecuteButtonCorner.CornerRadius = UDim.new(0, 10)
+    ExecuteButtonCorner.Parent = ExecuteButton
+
     ExecuteButton.MouseButton1Click:Connect(function()
         local result = executeServerRequire(InputBox.Text)
         print(result)
@@ -178,12 +228,26 @@ local function createMainUI(ScreenGui)
     RemoteBox.Size = UDim2.new(0.8, 0, 0.2, 0)
     RemoteBox.Position = UDim2.new(0.1, 0, 0.5, 0)
     RemoteBox.PlaceholderText = "Enter RemoteStorage script name here..."
+    RemoteBox.BackgroundTransparency = 0.5
+    RemoteBox.BorderSizePixel = 0
+    RemoteBox.TextScaled = true
+    RemoteBox.Font = Enum.Font.SourceSans
+    RemoteBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 
     local RemoteExecuteButton = Instance.new("TextButton", MainFrame)
     RemoteExecuteButton.Text = "EXECUTE REMOTE"
     RemoteExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
     RemoteExecuteButton.Position = UDim2.new(0.35, 0, 0.75, 0)
-    
+    RemoteExecuteButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+    RemoteExecuteButton.TextScaled = true
+    RemoteExecuteButton.Font = Enum.Font.SourceSansBold
+    RemoteExecuteButton.BorderSizePixel = 0
+
+    -- Add corner radius
+    local RemoteExecuteButtonCorner = Instance.new("UICorner")
+    RemoteExecuteButtonCorner.CornerRadius = UDim.new(0, 10)
+    RemoteExecuteButtonCorner.Parent = RemoteExecuteButton
+
     RemoteExecuteButton.MouseButton1Click:Connect(function()
         local result = executeRemoteStorage(RemoteBox.Text)
         print(result)
@@ -193,11 +257,25 @@ local function createMainUI(ScreenGui)
     RemoteEventBox.Size = UDim2.new(0.8, 0, 0.2, 0)
     RemoteEventBox.Position = UDim2.new(0.1, 0, 0.65, 0)
     RemoteEventBox.PlaceholderText = "Enter RemoteEvent name here..."
+    RemoteEventBox.BackgroundTransparency = 0.5
+    RemoteEventBox.BorderSizePixel = 0
+    RemoteEventBox.TextScaled = true
+    RemoteEventBox.Font = Enum.Font.SourceSans
+    RemoteEventBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 
     local RemoteEventExecuteButton = Instance.new("TextButton", MainFrame)
     RemoteEventExecuteButton.Text = "EXECUTE REMOTEEVENT"
     RemoteEventExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
     RemoteEventExecuteButton.Position = UDim2.new(0.35, 0, 0.9, 0)
+    RemoteEventExecuteButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+    RemoteEventExecuteButton.TextScaled = true
+    RemoteEventExecuteButton.Font = Enum.Font.SourceSansBold
+    RemoteEventExecuteButton.BorderSizePixel = 0
+
+    -- Add corner radius
+    local RemoteEventExecuteButtonCorner = Instance.new("UICorner")
+    RemoteEventExecuteButtonCorner.CornerRadius = UDim.new(0, 10)
+    RemoteEventExecuteButtonCorner.Parent = RemoteEventExecuteButton
 
     RemoteEventExecuteButton.MouseButton1Click:Connect(function()
         local result = executeRemoteEvent(RemoteEventBox.Text)
@@ -208,11 +286,25 @@ local function createMainUI(ScreenGui)
     RemoteFunctionBox.Size = UDim2.new(0.8, 0, 0.2, 0)
     RemoteFunctionBox.Position = UDim2.new(0.1, 0, 0.8, 0)
     RemoteFunctionBox.PlaceholderText = "Enter RemoteFunction name here..."
+    RemoteFunctionBox.BackgroundTransparency = 0.5
+    RemoteFunctionBox.BorderSizePixel = 0
+    RemoteFunctionBox.TextScaled = true
+    RemoteFunctionBox.Font = Enum.Font.SourceSans
+    RemoteFunctionBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 
     local RemoteFunctionExecuteButton = Instance.new("TextButton", MainFrame)
     RemoteFunctionExecuteButton.Text = "EXECUTE REMOTEFUNCTION"
     RemoteFunctionExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
     RemoteFunctionExecuteButton.Position = UDim2.new(0.35, 0, 1.05, 0)
+    RemoteFunctionExecuteButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+    RemoteFunctionExecuteButton.TextScaled = true
+    RemoteFunctionExecuteButton.Font = Enum.Font.SourceSansBold
+    RemoteFunctionExecuteButton.BorderSizePixel = 0
+
+    -- Add corner radius
+    local RemoteFunctionExecuteButtonCorner = Instance.new("UICorner")
+    RemoteFunctionExecuteButtonCorner.CornerRadius = UDim.new(0, 10)
+    RemoteFunctionExecuteButtonCorner.Parent = RemoteFunctionExecuteButton
 
     RemoteFunctionExecuteButton.MouseButton1Click:Connect(function()
         local result = executeRemoteFunction(RemoteFunctionBox.Text)
@@ -223,11 +315,30 @@ local function createMainUI(ScreenGui)
     MinimizeButton.Text = "_"
     MinimizeButton.Position = UDim2.new(0.85, 0, 0, 0)
     MinimizeButton.Size = UDim2.new(0.1, 0, 0.1, 0)
+    MinimizeButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    MinimizeButton.TextScaled = true
+    MinimizeButton.Font = Enum.Font.SourceSansBold
+    MinimizeButton.BorderSizePixel = 0
+
+    -- Add corner radius
+    local MinimizeButtonCorner = Instance.new("UICorner")
+    MinimizeButtonCorner.CornerRadius = UDim.new(0, 10)
+    MinimizeButtonCorner.Parent = MinimizeButton
     
     local CloseButton = Instance.new("TextButton", MainFrame)
     CloseButton.Text = "X"
     CloseButton.Position = UDim2.new(0.95, 0, 0, 0)
     CloseButton.Size = UDim2.new(0.1, 0, 0.1, 0)
+    CloseButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    CloseButton.TextScaled = true
+    CloseButton.Font = Enum.Font.SourceSansBold
+    CloseButton.BorderSizePixel = 0
+
+    -- Add corner radius
+    local CloseButtonCorner = Instance.new("UICorner")
+    CloseButtonCorner.CornerRadius = UDim.new(0, 10)
+    CloseButtonCorner.Parent = CloseButton
+
     CloseButton.MouseButton1Click:Connect(function()
         MainFrame:Destroy()
     end)
