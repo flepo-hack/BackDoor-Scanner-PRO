@@ -1,4 +1,4 @@
--- BackDoor Scanner - PRO for Fluxus Executor (Ultimate Edition)
+-- Backdoor Scanner - PRO for Fluxus Executor (Ultimate Edition)
 -- Features: Ultra-Advanced Backdoor scanning, Super-Modern Animated UI, Anti-Cheat, Anti-Detect, Extended Logging, Smooth Animations, Server-Side Require Execution, Draggable UI, Real-Time Log Viewer, RemoteStorage Integration, RemoteEvent, RemoteFunction, and More.
 
 local scanner = {}
@@ -75,6 +75,16 @@ local function executeRemoteFunction(functionName, ...)
     end
 end
 
+-- Function to animate the RGB border
+local function animateBorder(UIBorder)
+    local hue = 0
+    while true do
+        UIBorder.Color = Color3.fromHSV(hue, 1, 1)
+        hue = (hue + 0.01) % 1
+        wait(0.1)
+    end
+end
+
 -- Ultra-Modern Animated UI with RGB Border
 local function createUI()
     local ScreenGui = Instance.new("ScreenGui")
@@ -106,16 +116,7 @@ local function createUI()
     UIBorder.Color = Color3.fromRGB(255, 0, 0)
     UIBorder.Transparency = 0.5
 
-    -- Function to animate the RGB border
-    local function animateBorder()
-        local hue = 0
-        while true do
-            UIBorder.Color = Color3.fromHSV(hue, 1, 1)
-            hue = (hue + 0.01) % 1
-            wait(0.1)
-        end
-    end
-    spawn(animateBorder)
+    spawn(function() animateBorder(UIBorder) end)
 
     TextLabel.Parent = Frame
     TextLabel.Text = "Backdoor Scanner - PRO ULTIMATE"
@@ -166,7 +167,7 @@ local function createUI()
     }
 end
 
--- Määritellään createMainUI-funktio ennen sen kutsumista
+-- Main UI after scanning
 local function createMainUI(ScreenGui)
     local MainFrame = Instance.new("Frame")
     MainFrame.Parent = ScreenGui
@@ -185,16 +186,7 @@ local function createMainUI(ScreenGui)
     UIBorder.Color = Color3.fromRGB(255, 0, 0)
     UIBorder.Transparency = 0.5
 
-    -- Function to animate the RGB border
-    local function animateBorder()
-        local hue = 0
-        while true do
-            UIBorder.Color = Color3.fromHSV(hue, 1, 1)
-            hue = (hue + 0.01) % 1
-            wait(0.1)
-        end
-    end
-    spawn(animateBorder)
+    spawn(function() animateBorder(UIBorder) end)
 
     local InputBox = Instance.new("TextBox", MainFrame)
     InputBox.Size = UDim2.new(0.8, 0, 0.2, 0)
