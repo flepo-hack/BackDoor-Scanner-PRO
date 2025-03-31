@@ -85,6 +85,11 @@ local function animateBorder(UIBorder)
     end
 end
 
+-- Function to inject into Roblox
+local function injectToRoblox()
+    -- Lisää injektointikoodi tähän
+end
+
 -- Function to add shadow effect to text
 local function addShadow(textLabel)
     local TextShadow = Instance.new("TextLabel")
@@ -168,7 +173,7 @@ local function createUI()
         print("Scan completed. Found backdoors: " .. #backdoors)
 
         -- Inject to Roblox and ensure server-side works better through backdoors
-        -- Add your inject function here
+        injectToRoblox()
 
         -- Switch to main UI without creating a new one
         Frame:Destroy()
