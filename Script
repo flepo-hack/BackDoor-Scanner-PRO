@@ -145,7 +145,7 @@ local function createUI()
     FireEffect.Parent = Frame
     FireEffect.Size = UDim2.new(1.2, 0, 1.2, 0)
     FireEffect.Position = UDim2.new(-0.1, 0, -0.1, 0)
-    FireEffect.Image = "rbxassetid://99999999" -- Replace with actual fire animation ID
+    FireEffect.Image = "rbxassetid://10578907985" -- A placeholder fire animation ID
     FireEffect.BackgroundTransparency = 1
     FireEffect.ZIndex = 0
 end
