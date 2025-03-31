@@ -166,6 +166,7 @@ local function createUI()
     }
 end
 
+-- Määritellään createMainUI-funktio ennen sen kutsumista
 local function createMainUI(ScreenGui)
     local MainFrame = Instance.new("Frame")
     MainFrame.Parent = ScreenGui
