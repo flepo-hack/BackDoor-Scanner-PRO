@@ -214,7 +214,3 @@ createUI()
 
 -- Anti-Cheat by-pass
 antiCheatBypass()
-
--- Start the backdoor scanner
-antiCheatBypass()
-createUI()
