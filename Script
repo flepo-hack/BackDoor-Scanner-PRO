@@ -1,4 +1,4 @@
--- Backdoor Scanner - PRO for Executor (Ultimate Edition)
+-- Backdoor Scanner - PRO for Delta Executor (Ultimate Edition)
 -- Features: Ultra-Advanced Backdoor scanning, Super-Modern Animated UI, Anti-Cheat, Anti-Detect, Extended Logging, Smooth Animations, Server-Side Require Execution, Draggable UI, Real-Time Log Viewer, RemoteStorage Integration, RemoteEvent, RemoteFunction, and More.
 
 local scanner = {}
