@@ -1,4 +1,4 @@
--- Backdoor Scanner - PRO for Fluxus Executor (Ultimate Edition)
+-- Backdoor Scanner - PRO for Executor (Ultimate Edition)
 -- Features: Ultra-Advanced Backdoor scanning, Super-Modern Animated UI, Anti-Cheat, Anti-Detect, Extended Logging, Smooth Animations, Server-Side Require Execution, Draggable UI, Real-Time Log Viewer, RemoteStorage Integration, RemoteEvent, RemoteFunction, and More.
 
 local scanner = {}
@@ -42,19 +42,21 @@ local function executeServerRequire(scriptID)
             if obj and obj:IsA("RemoteFunction") then
                 return obj:InvokeServer(scriptID)
             elseif obj and obj:IsA("RemoteEvent") then
-                return obj:FireServer(scriptID)
+                obj:FireServer(scriptID)
+                return "[SUCCESS] Fired RemoteEvent"
             else
                 error("[ERROR] No suitable RemoteFunction or RemoteEvent found for backdoor: " .. backdoor)
             end
         end)
         if success then
             print("[SUCCESS] Script Executed Successfully via backdoor: " .. backdoor)
-            return
+            return result
         else
             warn("[ERROR] Script Execution Failed via backdoor: " .. backdoor .. " - " .. result)
         end
     end
     warn("[ERROR] No suitable backdoor found for script execution.")
+    return "[ERROR] No suitable backdoor found"
 end
 
 -- Function to show a Roblox notification
