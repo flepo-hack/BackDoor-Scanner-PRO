@@ -17,7 +17,7 @@ end
 -- Optimized Backdoor Scan Function with Coroutine
 local function scanForBackdoors()
     local backdoors = {}
-    local methods = {"RemoteEvent", "RemoteFunction", "LoadString", "require", "ModuleScript", "Script"}
+    local methods = {"RemoteEvent", "RemoteFunction", "ModuleScript", "Script"}
 
     for _, obj in pairs(game:GetDescendants()) do
         -- Yield periodically to avoid freezing
