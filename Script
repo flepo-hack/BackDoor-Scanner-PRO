@@ -58,6 +58,15 @@ local function executeServerRequire(scriptID)
     warn("[ERROR] No suitable backdoor found for script execution.")
 end
 
+-- Function to show a Roblox notification
+local function showNotification(title, text, duration)
+    game.StarterGui:SetCore("SendNotification", {
+        Title = title,
+        Text = text,
+        Duration = duration,
+    })
+end
+
 -- Function to animate the RGB border
 local function animateBorder(UIBorder)
     local hue = 0
@@ -162,6 +171,7 @@ local function createUI()
 
     -- Execute button functionality
     ExecuteButton.MouseButton1Click:Connect(function()
+        showNotification("Warning", "You might encounter some bugs or crashes. Also, it might freeze.", 5)
         local userInput = InputBox.Text
         local success, result = pcall(executeServerRequire, userInput)
         if success then
