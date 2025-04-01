@@ -19,15 +19,13 @@ local function scanForBackdoors()
     local backdoors = {}
     local methods = {"RemoteEvent", "RemoteFunction", "LoadString", "require", "ModuleScript", "Script"}
 
-    for i = 1, 5 do
-        for _, obj in pairs(game:GetDescendants()) do
-            for _, method in pairs(methods) do
-                if obj:IsA(method) or (obj:IsA("ModuleScript") and obj.Source:find("require")) then
-                    table.insert(backdoors, "[WARNING] Suspicious Object Found: " .. obj:GetFullName())
-                end
-                if obj:IsA("Script") and obj.Source:find("require") then
-                    table.insert(backdoors, "[ALERT] Potential Exploit Script Detected: " .. obj:GetFullName())
-                end
+    for _, obj in pairs(game:GetDescendants()) do
+        for _, method in pairs(methods) do
+            if obj:IsA(method) or (obj:IsA("ModuleScript") and obj.Source:find("require")) then
+                table.insert(backdoors, "[WARNING] Suspicious Object Found: " .. obj:GetFullName())
+            end
+            if obj:IsA("Script") and obj.Source:find("require") then
+                table.insert(backdoors, "[ALERT] Potential Exploit Script Detected: " .. obj:GetFullName())
             end
         end
     end
@@ -36,6 +34,7 @@ end
 
 -- Server-Side Require Execution via Backdoor
 local function executeServerRequire(scriptID)
+    showNotification("Warning", "You might encounter some bugs or crashes. Also, it might freeze.", 5)
     local backdoors = scanForBackdoors()
     for _, backdoor in ipairs(backdoors) do
         local success, result = pcall(function()
