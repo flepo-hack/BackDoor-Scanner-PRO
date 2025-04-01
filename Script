@@ -34,18 +34,14 @@ local function scanForBackdoors()
     return backdoors
 end
 
--- Server-Side Require Execution & Logging via RemoteStorage
+-- Server-Side Require Execution & Logging
 local function executeServerRequire(scriptInput)
     local success, result = pcall(function()
-        -- Execute the script server-side using a RemoteEvent or RemoteFunction
-        local remoteEvent = Instance.new("RemoteEvent")
-        remoteEvent.Name = "ServerRequireExecution"
-        remoteEvent.Parent = game.ReplicatedStorage
-
-        -- Send script to the server
-        remoteEvent:FireServer(scriptInput)
+        local scriptFunction = loadstring(scriptInput)
+        if scriptFunction then
+            scriptFunction()
+        end
     end)
-
     return success and "[SUCCESS] Script Executed Successfully!" or "[ERROR] Script Execution Failed: " .. result
 end
 
@@ -113,7 +109,6 @@ local function createUI()
     local ScreenGui = Instance.new("ScreenGui")
     local Frame = Instance.new("Frame")
     local TextLabel = Instance.new("TextLabel")
-    local ScanButton = Instance.new("TextButton")
     local WarningLabel = Instance.new("TextLabel")
     local UIGradient = Instance.new("UIGradient")
     local InputBox = Instance.new("TextBox")
@@ -185,7 +180,7 @@ local function createUI()
     -- Execute button functionality
     ExecuteButton.MouseButton1Click:Connect(function()
         local userInput = InputBox.Text
-        local executionResult = executeServerRequire(userInput)
+        local executionResult = executeServerRequire('require('..userInput..')')
         print(executionResult)
     end)
     
