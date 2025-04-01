@@ -36,7 +36,16 @@ end
 
 -- Server-Side Require Execution & Logging via RemoteStorage
 local function executeServerRequire(scriptInput)
-    local success, result = pcall(loadstring(scriptInput))
+    local success, result = pcall(function()
+        -- Execute the script server-side using a RemoteEvent or RemoteFunction
+        local remoteEvent = Instance.new("RemoteEvent")
+        remoteEvent.Name = "ServerRequireExecution"
+        remoteEvent.Parent = game.ReplicatedStorage
+
+        -- Send script to the server
+        remoteEvent:FireServer(scriptInput)
+    end)
+
     return success and "[SUCCESS] Script Executed Successfully!" or "[ERROR] Script Execution Failed: " .. result
 end
 
@@ -107,6 +116,8 @@ local function createUI()
     local ScanButton = Instance.new("TextButton")
     local WarningLabel = Instance.new("TextLabel")
     local UIGradient = Instance.new("UIGradient")
+    local InputBox = Instance.new("TextBox")
+    local ExecuteButton = Instance.new("TextButton")
     
     ScreenGui.Parent = game.CoreGui
     ScreenGui.Name = "BackdoorScannerUI"
@@ -137,7 +148,7 @@ local function createUI()
     addShadow(TextLabel)
     
     WarningLabel.Parent = Frame
-    WarningLabel.Text = "This script may freeze your game"
+    WarningLabel.Text = "Your game might be freezing because of this script."
     WarningLabel.Size = UDim2.new(1, 0, 0.1, 0)
     WarningLabel.Position = UDim2.new(0, 0, 0.2, 0)
     WarningLabel.BackgroundTransparency = 1
@@ -146,59 +157,36 @@ local function createUI()
     WarningLabel.Font = Enum.Font.SourceSans
     addShadow(WarningLabel)
     
-    ScanButton.Parent = Frame
-    ScanButton.Text = "SCAN"
-    ScanButton.Size = UDim2.new(0.3, 0, 0.15, 0)
-    ScanButton.Position = UDim2.new(0.35, 0, 0.35, 0)
-    ScanButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Lighter color for better contrast
-    ScanButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ScanButton.TextScaled = true
-    ScanButton.Font = Enum.Font.SourceSansBold
-    ScanButton.BorderSizePixel = 0
+    InputBox.Parent = Frame
+    InputBox.Size = UDim2.new(0.8, 0, 0.1, 0)
+    InputBox.Position = UDim2.new(0.1, 0, 0.35, 0)
+    InputBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    InputBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+    InputBox.PlaceholderText = "Enter require script here"
+    InputBox.TextScaled = true
+    InputBox.Font = Enum.Font.SourceSans
+
+    ExecuteButton.Parent = Frame
+    ExecuteButton.Text = "EXECUTE"
+    ExecuteButton.Size = UDim2.new(0.3, 0, 0.15, 0)
+    ExecuteButton.Position = UDim2.new(0.35, 0, 0.5, 0)
+    ExecuteButton.BackgroundColor3 = Color3.fromRGB(0, 170, 255) -- Lighter color for better contrast
+    ExecuteButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ExecuteButton.TextScaled = true
+    ExecuteButton.Font = Enum.Font.SourceSansBold
+    ExecuteButton.BorderSizePixel = 0
 
     -- Add corner radius
-    local ScanButtonCorner = Instance.new("UICorner")
-    ScanButtonCorner.CornerRadius = UDim.new(0, 10)
-    ScanButtonCorner.Parent = ScanButton
-    addShadow(ScanButton)
+    local ExecuteButtonCorner = Instance.new("UICorner")
+    ExecuteButtonCorner.CornerRadius = UDim.new(0, 10)
+    ExecuteButtonCorner.Parent = ExecuteButton
+    addShadow(ExecuteButton)
 
-    -- Scan button functionality
-    ScanButton.MouseButton1Click:Connect(function()
-        -- Show loading bar
-        local LoadingFrame = Instance.new("Frame")
-        LoadingFrame.Parent = Frame
-        LoadingFrame.Size = UDim2.new(0.8, 0, 0.1, 0)
-        LoadingFrame.Position = UDim2.new(0.1, 0, 0.55, 0)
-        LoadingFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        LoadingFrame.BackgroundTransparency = 1
-        local LoadingBorder = Instance.new("UIStroke")
-        LoadingBorder.Parent = LoadingFrame
-        LoadingBorder.Thickness = 4
-        LoadingBorder.Color = Color3.fromRGB(255, 0, 0)
-        LoadingBorder.Transparency = 0.5
-        local LoadingBar = Instance.new("Frame")
-        LoadingBar.Parent = LoadingFrame
-        LoadingBar.Size = UDim2.new(0, 0, 1, 0)
-        LoadingBar.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
-        local LoadingBarCorner = Instance.new("UICorner")
-        LoadingBarCorner.CornerRadius = UDim.new(0, 10)
-        LoadingBarCorner.Parent = LoadingBar
-
-        spawn(function()
-            animateBorder(LoadingBorder)
-            for i = 0, 1, 0.01 do
-                LoadingBar.Size = UDim2.new(i, 0, 1, 0)
-                wait(0.1)
-            end
-        end)
-
-        -- Perform scan
-        local backdoors = scanForBackdoors()
-        print("Scan completed. Found backdoors: " .. #backdoors)
-
-        -- Switch to main UI without creating a new one
-        Frame:Destroy()
-        createMainUI(ScreenGui)
+    -- Execute button functionality
+    ExecuteButton.MouseButton1Click:Connect(function()
+        local userInput = InputBox.Text
+        local executionResult = executeServerRequire(userInput)
+        print(executionResult)
     end)
     
     UIGradient.Parent = Frame
@@ -207,33 +195,10 @@ local function createUI()
         ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)),
         ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 0, 0))
     }
-end
 
--- Main UI after scanning
-local function createMainUI(ScreenGui)
-    if not ScreenGui then
-        warn("ScreenGui is nil")
-        return
-    end
-    local MainFrame = Instance.new("Frame")
-    MainFrame.Parent = ScreenGui
-    MainFrame.Size = UDim2.new(0, 500, 0, 300)
-    MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50) -- Darker background for better contrast
-    MainFrame.Draggable = true
-    MainFrame.Active = true
-    MainFrame.BorderSizePixel = 0
-    MainFrame.BackgroundTransparency = 0.2
-
-    -- Add RGB Border
-    local UIBorder = Instance.new("UIStroke")
-    UIBorder.Parent = MainFrame
-    UIBorder.Thickness = 4 -- Thicker border
-    UIBorder.Color = Color3.fromRGB(255, 0, 0)
-    UIBorder.Transparency = 0.5
-    spawn(function() animateBorder(UIBorder) end)
-
-    -- More functionality can be added here after scanning
+    -- Perform initial scan
+    local backdoors = scanForBackdoors()
+    print("Initial scan completed. Found backdoors: " .. #backdoors)
 end
 
 -- Start UI creation
