@@ -211,6 +211,10 @@ end
 
 -- Main UI after scanning
 local function createMainUI(ScreenGui)
+    if not ScreenGui then
+        warn("ScreenGui is nil")
+        return
+    end
     local MainFrame = Instance.new("Frame")
     MainFrame.Parent = ScreenGui
     MainFrame.Size = UDim2.new(0, 500, 0, 300)
